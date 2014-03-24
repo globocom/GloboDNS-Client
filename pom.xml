@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.globo.evolucaoinfra</groupId>
+  <artifactId>dnsapi-client-java</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>dnsapi-client-java</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.codehaus.mojo</groupId>
+  			<artifactId>cobertura-maven-plugin</artifactId>
+  			<version>2.5.1</version>
+  			<configuration>
+  				<formats>
+  					<format>xml</format>
+  				</formats>
+  			</configuration>
+  			<executions>
+  				<execution>
+  					<phase>test</phase>
+  					<goals>
+  						<goal>cobertura</goal>
+  					</goals>
+  				</execution>
+  			</executions>
+  		</plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+  	</plugins>
+    <extensions> 
+         <extension> 
+            <groupId>org.apache.maven.wagon</groupId> 
+            <artifactId>wagon-webdav-jackrabbit</artifactId> 
+            <version>1.0-beta-7</version> 
+         </extension> 
+     </extensions>
+  </build>
+
+  <distributionManagement>
+  	<repository>
+  		<id>archiva.internal</id>
+  		<name>Maven Internal Repository</name>
+  		<url>dav:http://cvs.globoi.com/archiva/repository/internal</url>
+  	</repository>
+  	<snapshotRepository>
+  		<id>archiva.snapshots</id>
+  		<name>Maven Internal Snapshots Repository</name>
+ 		<url>dav:http://cvs.globoi.com/archiva/repository/snapshots</url>
+  	</snapshotRepository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+    </dependency>
+  </dependencies>
+</project>
