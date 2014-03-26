@@ -3,11 +3,15 @@ package com.globo.dnsapi.http;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
 import com.globo.dnsapi.exception.DNSAPIException;
+import com.globo.dnsapi.model.Domain;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
@@ -30,14 +34,18 @@ public abstract class RequestProcessor {
 	protected <T> T parseJson(String inputContent, Class<T> dataClass) throws DNSAPIException {
 		
 		if (true /* isList() */) {
-			inputContent = "{\"list\":" + inputContent + "}";
+//			inputContent = "{\"list\":" + inputContent + "}";
 		}
 		Reader in = new StringReader(inputContent);
 		
 		try {
-			ListObject<T> listObj = new ListObject<T>();
-			listObj = parser.parseAndClose(in, listObj.getClass());// dataClass);
-			return listObj.getList().get(0);
+			Type tipo = (new TypeReference<ArrayList<Domain>>() {}).getType();
+			
+			List<Domain> listObj = (List<Domain>) parser.parseAndClose(in, tipo);
+			System.out.println(listObj.get(0).getClass());
+			System.out.println(listObj.get(0).getName());
+//			return listObj.getList().get(0);
+			return null;
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e.getMessage(), e);
 		}

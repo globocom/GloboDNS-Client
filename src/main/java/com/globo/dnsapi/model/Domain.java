@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 
-public class Domain extends GenericJson {
+public class Domain {
 
 	@Key
 	private Long id;
@@ -31,8 +31,6 @@ public class Domain extends GenericJson {
 	@Key
 	private String name;
 	
-	//FIXME Include other fields
-
 	public Long getId() {
 		return id;
 	}
