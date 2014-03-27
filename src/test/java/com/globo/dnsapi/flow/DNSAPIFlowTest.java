@@ -39,6 +39,8 @@ public class DNSAPIFlowTest {
 		String domainName = "anydomain.com";
 		String email = "admin@domain.com";
 		String password = "password";
+		String newDomainName = "newdomain.com";
+		String newAuthType = "M";
 		
 		
 		// Step 0: Register all fake requests that will be made throughout the test
@@ -54,45 +56,58 @@ public class DNSAPIFlowTest {
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
 				"[{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-11T17:31:58Z\",\"id\":0,\"last_check\":null,\"master\":null,\"name\":\"anydomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-11T17:38:40Z\",\"user_id\":null,\"view_id\":null}}]");
 
+		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 
+				"{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-25T01:04:05Z\",\"id\":100,\"last_check\":null,\"master\":null,\"name\":\"newdomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-25T01:04:05Z\",\"user_id\":null,\"view_id\":null}}");
+
 		
 		// Step 1: Sign in
 		Authentication auth = this.authAPI.signIn(email, password);
 		
 		assertNotNull(auth);
-		assertEquals(auth.getId(), Long.valueOf(1));
-		assertEquals(auth.getToken(), "Xjn5GEsYsQySAsr7APqj");
+		assertEquals(Long.valueOf(1), auth.getId());
+		assertEquals("Xjn5GEsYsQySAsr7APqj", auth.getToken());
 		
 		
 		// Step 2: List all domains
 		List<Domain> domainList = this.domainAPI.listAll();
 		assertNotNull(domainList);
-		assertEquals(domainList.size(), 4);
+		assertEquals(4, domainList.size());
 		
 		Domain domain1 = domainList.get(0);
-		assertEquals(domain1.getId(), Long.valueOf(1));
-		assertEquals(domain1.getName(), "firstdomain.com");
+		assertEquals(Long.valueOf(1), domain1.getId());
+		assertEquals("N", domain1.getAddressType());
+		assertEquals("firstdomain.com", domain1.getName());
 		
 		Domain domain2 = domainList.get(1);
-		assertEquals(domain2.getId(), Long.valueOf(2));
-		assertEquals(domain2.getName(), "seconddomain.com");
+		assertEquals(Long.valueOf(2), domain2.getId());
+		assertEquals("N", domain2.getAddressType());
+		assertEquals("seconddomain.com", domain2.getName());
 		
 		Domain domain3 = domainList.get(2);
-		assertEquals(domain3.getId(), Long.valueOf(3));
-		assertEquals(domain3.getName(), "thirddomain.com");
+		assertEquals(Long.valueOf(3), domain3.getId());
+		assertEquals("N", domain3.getAddressType());
+		assertEquals("thirddomain.com", domain3.getName());
 		
 		Domain domain4 = domainList.get(3);
-		assertEquals(domain4.getId(), Long.valueOf(4));
-		assertEquals(domain4.getName(), "fourthdomain.com");
+		assertEquals(Long.valueOf(4), domain4.getId());
+		assertEquals("N", domain4.getAddressType());
+		assertEquals("fourthdomain.com", domain4.getName());
 		
 		
 		// Step 3: List the domain we want - domainName
 		domainList = this.domainAPI.listByName(domainName);
 		assertNotNull(domainList);
-		assertEquals(domainList.size(), 1);
+		assertEquals(1, domainList.size());
 		
 		Domain domain = domainList.get(0);
-		assertEquals(domain.getId(), Long.valueOf(0));
-		assertEquals(domain.getName(), domainName);
+		assertEquals(Long.valueOf(0), domain.getId());
+		assertEquals(domainName, domain.getName());
 		
+		
+		// Step 4: Create a new domain
+		Domain createdDomain = this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
+		assertNotNull(createdDomain);
+		assertEquals(newDomainName, createdDomain.getName());
+		assertEquals(newAuthType, createdDomain.getAuthorityType());
 	}
 }

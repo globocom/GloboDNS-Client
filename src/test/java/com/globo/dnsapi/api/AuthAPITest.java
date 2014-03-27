@@ -32,8 +32,8 @@ public class AuthAPITest {
 				"{\"authentication_token\":\"Xjn5GEsYsQySAsr7APqj\",\"id\":1}");
 		Authentication auth = this.authAPI.signIn("admin@domain.com", "password");
 		assertNotNull(auth);
-		assertEquals(auth.getId(), Long.valueOf(1));
-		assertEquals(auth.getToken(), "Xjn5GEsYsQySAsr7APqj");
+		assertEquals(Long.valueOf(1), auth.getId());
+		assertEquals("Xjn5GEsYsQySAsr7APqj", auth.getToken());
 	}
 
 }

@@ -16,11 +16,21 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		super(transport);
 	}
 	
+	@Override
+	protected Type getType() {
+		return new TypeReference<Authentication>() {}.getType();
+	}
+
+	@Override
+	protected Type getListType() {
+		return new TypeReference<List<Authentication>>() {}.getType();
+	}
+	
 	public Authentication signIn(String email, String password) throws DNSAPIException {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
 		payload.set("user", user);
-		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false);
+		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false, false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid authentication response");
 		}
@@ -31,13 +41,4 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		return auth;
 	}
 	
-	@Override
-	protected Type getType() {
-		return new TypeReference<Authentication>() {}.getType();
-	}
-
-	@Override
-	protected Type getListType() {
-		return new TypeReference<List<Authentication>>() {}.getType();
-	}
 }
