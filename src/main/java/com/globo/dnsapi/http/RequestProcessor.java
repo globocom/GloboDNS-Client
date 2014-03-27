@@ -82,7 +82,7 @@ public abstract class RequestProcessor {
 			// This assumes error is well formed and mappable to class ErrorMessage
 			DNSAPIRoot<ErrorMessage> response = this.parseJson(responseAsString, ErrorMessage.class);
 			ErrorMessage errorMsg = response.getFirstObject();
-			if (errorMsg != null) {
+			if (errorMsg != null && errorMsg.getMsg() != null) {
 				throw new DNSAPIException(errorMsg.getMsg());
 			} else {
 				throw new DNSAPIException(responseAsString);

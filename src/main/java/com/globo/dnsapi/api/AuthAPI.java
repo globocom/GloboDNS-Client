@@ -36,9 +36,8 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		}
 
 		Authentication auth = dnsAPIRoot.getFirstObject();
-		// Setup token for future accesses for other APIs
+		// Setup token for future accesses by other APIs
 		this.setToken(auth.getToken());
 		return auth;
 	}
-	
 }
