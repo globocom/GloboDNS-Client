@@ -12,17 +12,16 @@ import com.google.api.client.http.HttpHeaders;
 
 public class DomainAPI extends BaseAPI<Domain> {
 
-	private String token;
+	private HttpHeaders headerWithToken;
 	
 	public DomainAPI(RequestProcessor transport, String token) {
 		super(transport);
-		this.token = token;
+		this.headerWithToken = new HttpHeaders();
+		this.headerWithToken.set("X-Auth-Token", token);
 	}
 	
 	public List<Domain> listByName(String domainName) throws DNSAPIException {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Auth-Token", this.token);
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, headers, true);
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, this.headerWithToken, true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -30,9 +29,7 @@ public class DomainAPI extends BaseAPI<Domain> {
 	}
 	
 	public List<Domain> listAll() throws DNSAPIException {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Auth-Token", this.token);
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", headers, true);
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", this.headerWithToken, true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}

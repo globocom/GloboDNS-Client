@@ -44,6 +44,18 @@ public class DomainAPITest {
 	}
 	
 	@Test
+	public void testListByNameDomainDoesntExist() throws DNSAPIException {
+		
+		String domainName = "unexistant.dev.globoi.com";
+		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
+				"[]");
+		
+		List<Domain> domainList = this.domainAPI.listByName(domainName);
+		assertNotNull(domainList);
+		assertEquals(domainList.size(), 0);
+	}
+	
+	@Test
 	public void testListAll() throws DNSAPIException {
 		
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 
