@@ -17,6 +17,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 public abstract class RequestProcessor {
 	
+	private String token;
+	
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	static final JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 
@@ -30,6 +32,13 @@ public abstract class RequestProcessor {
 
 	protected <T> DNSAPIRoot<T> parseJson(String inputContent, Type type) throws DNSAPIException {
 		
+		DNSAPIRoot<T> dnsAPIRoot = new DNSAPIRoot<T>();
+		
+		if ("".equalsIgnoreCase(inputContent)) {
+			// Empty response, just return empty object
+			return dnsAPIRoot;
+		}
+		
 		boolean isList = false;
 		if (inputContent.startsWith("[") && inputContent.endsWith("]")) {
 			// This means it's a list
@@ -38,9 +47,7 @@ public abstract class RequestProcessor {
 		
 		Reader in = new StringReader(inputContent);
 		
-		try {
-			DNSAPIRoot<T> dnsAPIRoot = new DNSAPIRoot<T>();
-			
+		try {			
 			if (isList) {
 				List<T> retList = (List<T>) parser.parseAndClose(in, type);
 				dnsAPIRoot.setObjectList(retList);
@@ -64,7 +71,7 @@ public abstract class RequestProcessor {
 	 * @throws NetworkAPIException
 	 */
 	protected void handleExceptionIfNeeded(int statusCode, String responseAsString) throws DNSAPIException {
-		if (statusCode == 200) {
+		if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
 			// Successful return, do nothing
 			return;
 		} else if (statusCode == 400 || statusCode == 500) {
@@ -89,5 +96,13 @@ public abstract class RequestProcessor {
 	
 	public DomainAPI getDomainAPI() {
 		return new DomainAPI(this);
+	}
+	
+	public String getToken() {
+		return this.token;
+	}
+	
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

@@ -159,4 +159,15 @@ public class DomainAPITest {
 		assertEquals(newDomainName, createdDomain.getName());
 		assertEquals(newAuthType, createdDomain.getAuthorityType());
 	}
+	
+	@Test
+	public void testCreateDomainAlreadyExists() throws DNSAPIException {
+		// String newDomainName = "newdomain.com";
+		// String newAuthType = "M";
+		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 
+				"{\"errors\":{\"name\":[\"has already been taken\"]}}");
+		
+		// FIXME Parse error even with 200 code
+		// Domain createdDomain = this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
+	}
 }

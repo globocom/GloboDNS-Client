@@ -73,4 +73,12 @@ public class DomainAPI extends BaseAPI<Domain> {
 		}
 		return dnsAPIRoot.getFirstObject();
 	}
+	
+	public void removeDomain(Long domainId) throws DNSAPIException {
+		DNSAPIRoot<Domain> dnsAPIRoot = this.delete("/domains/" + domainId + ".json", false, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return;
+	}
 }

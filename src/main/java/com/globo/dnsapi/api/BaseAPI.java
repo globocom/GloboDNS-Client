@@ -10,7 +10,6 @@ import com.google.api.client.http.HttpHeaders;
 public abstract class BaseAPI<T> {
 	
 	private final RequestProcessor transport;
-	protected String token;
 	
 	public BaseAPI(RequestProcessor transport) {
 		this.transport = transport;
@@ -24,11 +23,8 @@ public abstract class BaseAPI<T> {
 	}
 	
 	protected HttpHeaders getHttpHeaders(boolean reverse) {
-		if (this.token == null) {
-			return null;
-		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Auth-Token", this.token);
+		headers.set("X-Auth-Token", this.getTransport().getToken());
 		if (reverse) {
 			headers.set("reverse", "true");
 		}
@@ -38,6 +34,10 @@ public abstract class BaseAPI<T> {
 	protected abstract Type getType();
 	
 	protected abstract Type getListType();
+	
+	protected void setToken(String token) {
+		this.getTransport().setToken(token);
+	}
 	
 	protected DNSAPIRoot<T> get(String suffixUrl, boolean isList, boolean reverse) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
