@@ -10,6 +10,7 @@ import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
 import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.model.DNSAPIRoot;
+import com.globo.dnsapi.model.ErrorMessage;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
@@ -71,19 +72,21 @@ public abstract class RequestProcessor {
 	 * @throws NetworkAPIException
 	 */
 	protected void handleExceptionIfNeeded(int statusCode, String responseAsString) throws DNSAPIException {
-		if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
+		if (statusCode/100 == 2) {
+			// 200 family code
 			// Successful return, do nothing
 			return;
-		} else if (statusCode == 400 || statusCode == 500) {
-			// FIXME Update to DNSAPI
+		} else if (statusCode/100 == 4 || statusCode/100 == 5) {
+			// 400 and 500 family codes
+			// Something was wrong, produce an error result
 			// This assumes error is well formed and mappable to class ErrorMessage
-//				NetworkAPIRoot<ErrorMessage> response = this.readXML(responseAsString, ErrorMessage.class);
-//				ErrorMessage errorMsg = response.getFirstObject();
-//				if (errorMsg != null) {
-//					throw new NetworkAPIErrorCodeException(errorMsg.getCode(), errorMsg.getDescription());
-//				} else {
-//					throw new NetworkAPIException(responseAsString);	
-//				}
+			DNSAPIRoot<ErrorMessage> response = this.parseJson(responseAsString, ErrorMessage.class);
+			ErrorMessage errorMsg = response.getFirstObject();
+			if (errorMsg != null) {
+				throw new DNSAPIException(errorMsg.getMsg());
+			} else {
+				throw new DNSAPIException(responseAsString);
+			}
 		} else {
 			// Unknown error code, return generic exception with description
 			throw new DNSAPIException(responseAsString);

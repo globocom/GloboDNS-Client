@@ -1,6 +1,7 @@
 package com.globo.dnsapi.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -26,20 +27,20 @@ public class DomainAPITest {
 		this.domainAPI = this.rp.getDomainAPI();
 	}
 	
-	@Test
+	@Test(expected=DNSAPIException.class)
 	public void testMissingToken() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 
+		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401,
 				"{\"error\":\"You need to sign in or sign up before continuing.\"}");
-		// FIXME Parse error even with 200 code
-		// List<Domain> domainList = this.domainAPI.listAll();
+		
+		this.domainAPI.listAll();
 	}
 	
-	@Test
+	@Test(expected=DNSAPIException.class)
 	public void testInvalidToken() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 
+		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401, 
 				"{\"error\":\"Invalid authentication token.\"}");
-		// FIXME Parse error even with 200 code
-		// List<Domain> domainList = this.domainAPI.listAll();
+
+		this.domainAPI.listAll();
 	}
 	
 	@Test
@@ -160,14 +161,13 @@ public class DomainAPITest {
 		assertEquals(newAuthType, createdDomain.getAuthorityType());
 	}
 	
-	@Test
+	@Test(expected=DNSAPIException.class)
 	public void testCreateDomainAlreadyExists() throws DNSAPIException {
-		// String newDomainName = "newdomain.com";
-		// String newAuthType = "M";
-		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 
+		String newDomainName = "newdomain.com";
+		String newAuthType = "M";
+		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 422,
 				"{\"errors\":{\"name\":[\"has already been taken\"]}}");
 		
-		// FIXME Parse error even with 200 code
-		// Domain createdDomain = this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
+		this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
 	}
 }
