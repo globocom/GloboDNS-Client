@@ -30,7 +30,7 @@ public class AuthAPITest {
 		
 		this.rp.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
 				"{\"authentication_token\":\"Xjn5GEsYsQySAsr7APqj\",\"id\":1}");
-		Authentication auth = this.authAPI.signIn("admin@globoi.com", "password");
+		Authentication auth = this.authAPI.signIn("admin@domain.com", "password");
 		assertNotNull(auth);
 		assertEquals(auth.getId(), Long.valueOf(1));
 		assertEquals(auth.getToken(), "Xjn5GEsYsQySAsr7APqj");

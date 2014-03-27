@@ -87,7 +87,7 @@ public abstract class RequestProcessor {
 		return new AuthAPI(this);
 	}
 	
-	public DomainAPI getDomainAPI(String token) {
-		return new DomainAPI(this, token);
+	public DomainAPI getDomainAPI() {
+		return new DomainAPI(this);
 	}
 }

@@ -20,11 +20,15 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
 		payload.set("user", user);
-		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, null, false);
+		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid authentication response");
 		}
-		return dnsAPIRoot.getFirstObject();
+
+		Authentication auth = dnsAPIRoot.getFirstObject();
+		// Setup token for future accesses for other APIs
+		super.token = auth.getToken();
+		return auth;
 	}
 	
 	@Override

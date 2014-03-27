@@ -8,20 +8,15 @@ import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.http.RequestProcessor;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.Domain;
-import com.google.api.client.http.HttpHeaders;
 
 public class DomainAPI extends BaseAPI<Domain> {
-
-	private HttpHeaders headerWithToken;
 	
-	public DomainAPI(RequestProcessor transport, String token) {
+	public DomainAPI(RequestProcessor transport) {
 		super(transport);
-		this.headerWithToken = new HttpHeaders();
-		this.headerWithToken.set("X-Auth-Token", token);
 	}
 	
 	public List<Domain> listByName(String domainName) throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, this.headerWithToken, true);
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -29,7 +24,7 @@ public class DomainAPI extends BaseAPI<Domain> {
 	}
 	
 	public List<Domain> listAll() throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", this.headerWithToken, true);
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
