@@ -1,12 +1,16 @@
 package com.globo.dnsapi.api;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.http.RequestProcessor;
 import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.User;
 
-public class AuthAPI extends BaseAPI {
+public class AuthAPI extends BaseAPI<Authentication> {
 
 	public AuthAPI(RequestProcessor transport) {
 		super(transport);
@@ -16,11 +20,20 @@ public class AuthAPI extends BaseAPI {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
 		payload.set("user", user);
-		Authentication auth = this.post("/users/sign_in.json", payload, Authentication.class, null);
-		if (auth == null) {
+		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, null, false);
+		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid authentication response");
-		} else {
-			return auth;
 		}
+		return dnsAPIRoot.getFirstObject();
+	}
+	
+	@Override
+	protected Type getType() {
+		return new TypeReference<Authentication>() {}.getType();
+	}
+
+	@Override
+	protected Type getListType() {
+		return new TypeReference<List<Authentication>>() {}.getType();
 	}
 }

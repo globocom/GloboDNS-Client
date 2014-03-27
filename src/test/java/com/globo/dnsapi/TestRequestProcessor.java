@@ -1,10 +1,12 @@
 package com.globo.dnsapi;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.http.RequestProcessor;
+import com.globo.dnsapi.model.DNSAPIRoot;
 import com.google.api.client.http.HttpHeaders;
 
 public class TestRequestProcessor extends RequestProcessor {
@@ -34,7 +36,7 @@ public class TestRequestProcessor extends RequestProcessor {
 		return this.urlVsResponse.get(key);
 	}
 	
-	private <T> T parseResponse(FakeResponse response, Class<T> dataClass) throws DNSAPIException {
+	private <T> DNSAPIRoot<T> parseResponse(FakeResponse response, Type type) throws DNSAPIException {
 		if (response == null) {
 			throw new RuntimeException("Invalid url");
 		}
@@ -42,27 +44,27 @@ public class TestRequestProcessor extends RequestProcessor {
 		int httpStatusCode = response.getStatusCode();
 		String content = response.getContent();
 		handleExceptionIfNeeded(httpStatusCode, content);
-		return this.parseJson(content, dataClass);
+		return this.parseJson(content, type);
 	}
 
-	public <T> T get(String baseurl, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> get(String baseurl, HttpHeaders headers, Type type) throws DNSAPIException {
 		FakeResponse response = this.fakeResponse(HttpMethod.GET, baseurl);
-		return this.parseResponse(response, dataClass);
+		return this.parseResponse(response, type);
 	}
 
-	public <T> T post(String baseurl, Object payload, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> post(String baseurl, Object payload, HttpHeaders headers, Type type) throws DNSAPIException {
 		FakeResponse response = this.fakeResponse(HttpMethod.POST, baseurl);
-		return this.parseResponse(response, dataClass);
+		return this.parseResponse(response, type);
 	}
 
-	public <T> T put(String baseurl, Object payload, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> put(String baseurl, Object payload, HttpHeaders headers, Type type) throws DNSAPIException {
 		FakeResponse response = this.fakeResponse(HttpMethod.PUT, baseurl);
-		return this.parseResponse(response, dataClass);
+		return this.parseResponse(response, type);
 	}
 
-	public <T> T delete(String baseurl, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> delete(String baseurl, HttpHeaders headers, Type type) throws DNSAPIException {
 		FakeResponse response = this.fakeResponse(HttpMethod.DELETE, baseurl);
-		return this.parseResponse(response, dataClass);
+		return this.parseResponse(response, type);
 	}
 	
 	private static class FakeResponse {

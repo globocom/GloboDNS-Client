@@ -1,13 +1,14 @@
 package com.globo.dnsapi.http;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.globo.dnsapi.exception.DNSAPIException;
+import com.globo.dnsapi.model.DNSAPIRoot;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
@@ -18,7 +19,6 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.util.Key;
 
 public class HttpJsonRequestProcessor extends RequestProcessor {
 
@@ -104,56 +104,55 @@ public class HttpJsonRequestProcessor extends RequestProcessor {
 	}
 	
 	@Override
-	public <T> T get(String suffixUrl, Class<T> dataClass, HttpHeaders headers)
+	public <T> DNSAPIRoot<T> get(String suffixUrl, HttpHeaders headers, Type type)
 			throws DNSAPIException {
 		try {
 			GenericUrl url = this.buildUrl(suffixUrl);
 			HttpRequest request = this.buildRequest("GET", url, null, headers);
 			String response = this.performRequest(request);
-
-			return this.parseJson(response, dataClass);
+			return this.parseJson(response, type); 
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e, e);
 		}
 	}
 
 	@Override
-	public <T> T post(String suffixUrl, Object payload,
-			Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> post(String suffixUrl, Object payload,
+			HttpHeaders headers, Type type) throws DNSAPIException {
 		try {
 			GenericUrl url = this.buildUrl(suffixUrl);
 			HttpRequest request = this.buildRequest("POST", url, payload, headers);
 			String response = this.performRequest(request);
 
-			return this.parseJson(response, dataClass);
+			return this.parseJson(response, type);
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e, e);
 		}	
 	}
 
 	@Override
-	public <T> T put(String suffixUrl, Object payload,
-			Class<T> dataClass, HttpHeaders headers) throws DNSAPIException {
+	public <T> DNSAPIRoot<T> put(String suffixUrl, Object payload,
+			HttpHeaders headers, Type type) throws DNSAPIException {
 		try {
 			GenericUrl url = this.buildUrl(suffixUrl);
 			HttpRequest request = this.buildRequest("PUT", url, payload, headers);
 			String response = this.performRequest(request);
 				
-			return this.parseJson(response, dataClass);
+			return this.parseJson(response, type);
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e, e);
 		}
 	}
 
 	@Override
-	public <T> T delete(String suffixUrl, Class<T> dataClass, HttpHeaders headers)
+	public <T> DNSAPIRoot<T> delete(String suffixUrl, HttpHeaders headers, Type type)
 			throws DNSAPIException {
 		try {
 			GenericUrl url = this.buildUrl(suffixUrl);
 			HttpRequest request = this.buildRequest("DELETE", url, null, headers);
 			String response = this.performRequest(request);
 
-			return this.parseJson(response, dataClass);
+			return this.parseJson(response, type);
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e, e);
 		}

@@ -4,57 +4,56 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
 import com.globo.dnsapi.exception.DNSAPIException;
-import com.globo.dnsapi.model.Domain;
+import com.globo.dnsapi.model.DNSAPIRoot;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.Key;
 
 public abstract class RequestProcessor {
 	
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	static final JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 
-	public abstract <T> T get(String suffixUrl, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException;
+	public abstract <T> DNSAPIRoot<T> get(String suffixUrl, HttpHeaders headers, Type type) throws DNSAPIException;
 	
-	public abstract <T> T post(String suffixUrl, Object payload, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException;
+	public abstract <T> DNSAPIRoot<T> post(String suffixUrl, Object payload, HttpHeaders headers, Type type) throws DNSAPIException;
 	
-	public abstract <T> T put(String suffixUrl, Object payload, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException;
+	public abstract <T> DNSAPIRoot<T> put(String suffixUrl, Object payload, HttpHeaders headers, Type type) throws DNSAPIException;
 	
-	public abstract <T> T delete(String suffixUrl, Class<T> dataClass, HttpHeaders headers) throws DNSAPIException;
+	public abstract <T> DNSAPIRoot<T> delete(String suffixUrl, HttpHeaders headers, Type type) throws DNSAPIException;
 
-	protected <T> T parseJson(String inputContent, Class<T> dataClass) throws DNSAPIException {
+	protected <T> DNSAPIRoot<T> parseJson(String inputContent, Type type) throws DNSAPIException {
 		
-		if (true /* isList() */) {
-//			inputContent = "{\"list\":" + inputContent + "}";
+		boolean isList = false;
+		if (inputContent.startsWith("[") && inputContent.endsWith("]")) {
+			// This means it's a list
+			isList = true;
 		}
+		
 		Reader in = new StringReader(inputContent);
 		
 		try {
-			Type tipo = (new TypeReference<ArrayList<Domain>>() {}).getType();
+			DNSAPIRoot<T> dnsAPIRoot = new DNSAPIRoot<T>();
 			
-			List<Domain> listObj = (List<Domain>) parser.parseAndClose(in, tipo);
-			System.out.println(listObj.get(0).getClass());
-			System.out.println(listObj.get(0).getName());
-//			return listObj.getList().get(0);
-			return null;
+			if (isList) {
+				List<T> retList = (List<T>) parser.parseAndClose(in, type);
+				dnsAPIRoot.setObjectList(retList);
+			} else {
+				T retObj = (T) parser.parseAndClose(in, type);
+				dnsAPIRoot.getObjectList().add(retObj);
+			}
+			
+			return dnsAPIRoot;
+
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e.getMessage(), e);
 		}
-			
-//		ArrayList<Domain> x = new ArrayList<Domain>();
-//		x = httpResponse.parseAs(x.getClass());
-//		System.out.println(x);
-//		System.out.println(x.get(0).getClass());
-//		return (T) x;
 	}
 	
 	/**
@@ -91,19 +90,4 @@ public abstract class RequestProcessor {
 	public DomainAPI getDomainAPI(String token) {
 		return new DomainAPI(this, token);
 	}
-	
-
-	public static class ListObject<T> {
-		@Key("list")
-		private List<T> list;
-		
-		public List<T> getList() {
-			return this.list;
-		}
-		
-		public void setList(List<T> list) {
-			this.list = list;
-		}
-	}
-
 }
