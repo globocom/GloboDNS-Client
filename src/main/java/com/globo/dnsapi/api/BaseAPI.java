@@ -22,12 +22,9 @@ public abstract class BaseAPI<T> {
 		return this.transport;
 	}
 	
-	protected HttpHeaders getHttpHeaders(boolean reverse) {
+	protected HttpHeaders getHttpHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("X-Auth-Token", this.getTransport().getToken());
-		if (reverse) {
-			headers.set("reverse", "true");
-		}
 		return headers;
 	}
 	
@@ -39,42 +36,42 @@ public abstract class BaseAPI<T> {
 		this.getTransport().setToken(token);
 	}
 	
-	protected DNSAPIRoot<T> get(String suffixUrl, boolean isList, boolean reverse) throws DNSAPIException {
+	protected DNSAPIRoot<T> get(String suffixUrl, boolean isList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
 		if (isList) {
-			answer = this.getTransport().get(suffixUrl, getHttpHeaders(reverse), getListType());
+			answer = this.getTransport().get(suffixUrl, getHttpHeaders(), getListType());
 		} else {
-			answer = this.getTransport().get(suffixUrl, getHttpHeaders(reverse), getType());
+			answer = this.getTransport().get(suffixUrl, getHttpHeaders(), getType());
 		}
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> post(String suffixUrl, Object payload , boolean isList, boolean reverse) throws DNSAPIException {
+	protected DNSAPIRoot<T> post(String suffixUrl, Object payload , boolean isList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
 		if (isList) {
-			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(reverse), getListType());	
+			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(), getListType());	
 		} else {
-			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(reverse), getType());
+			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(), getType());
 		}
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> put(String suffixUrl, Object payload, boolean isList, boolean reverse) throws DNSAPIException {
+	protected DNSAPIRoot<T> put(String suffixUrl, Object payload, boolean isList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
 		if (isList) {
-			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(reverse), getListType());
+			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(), getListType());
 		} else {
-			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(reverse), getType());
+			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(), getType());
 		}
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> delete(String suffixUrl, boolean isList, boolean reverse) throws DNSAPIException {
+	protected DNSAPIRoot<T> delete(String suffixUrl, boolean isList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
 		if (isList) {
-			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(reverse), getListType());
+			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(), getListType());
 		} else {
-			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(reverse), getType());
+			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(), getType());
 		}
 		return answer;
 	}

@@ -30,7 +30,7 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
 		payload.set("user", user);
-		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false, false);
+		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid authentication response");
 		}
