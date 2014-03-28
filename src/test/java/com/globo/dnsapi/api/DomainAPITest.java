@@ -37,10 +37,21 @@ public class DomainAPITest {
 	
 	@Test(expected=DNSAPIException.class)
 	public void testInvalidToken() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401, 
+		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401,
 				"{\"error\":\"Invalid authentication token.\"}");
 
 		this.domainAPI.listAll();
+	}
+	
+	@Test
+	public void testGetById() throws DNSAPIException {
+		Long domainId = 10L;
+		this.rp.registerFakeRequest(HttpMethod.GET, "/domains/" + domainId + ".json", 
+				"{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-11T17:31:58Z\",\"id\":10,\"last_check\":null,\"master\":null,\"name\":\"anydomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-11T17:38:40Z\",\"user_id\":null,\"view_id\":null}}");
+		
+		Domain domain = this.domainAPI.getById(domainId);
+		assertNotNull(domain);
+		assertEquals(domainId, domain.getId());
 	}
 	
 	@Test

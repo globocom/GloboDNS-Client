@@ -25,8 +25,93 @@ public class DomainAPI extends BaseAPI<Domain> {
 		return new TypeReference<List<Domain>>() {}.getType();
 	}
 	
+	////////////
+	// Domain //
+	////////////
+	
+	/* 
+	 * Recovering features
+	 */
+	public List<Domain> listAll() throws DNSAPIException {
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return dnsAPIRoot.getObjectList();
+	}
+	
 	public List<Domain> listByName(String domainName) throws DNSAPIException {
 		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, true, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return dnsAPIRoot.getObjectList();
+	}
+	
+	public Domain getById(Long domainId) throws DNSAPIException {
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains/" + domainId + ".json", false, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return dnsAPIRoot.getFirstObject();
+	}
+	
+	/* 
+	 * Creating features 
+	 */
+	public Domain createDomain(String name, Long templateId, String authorityType) throws DNSAPIException {
+		Domain domain = new Domain();
+		domain.getDomainAttributes().setName(name);
+		domain.getDomainAttributes().setTemplateId(templateId);
+		domain.getDomainAttributes().setAuthorityType(authorityType);
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.post("/domains.json", domain, false, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return dnsAPIRoot.getFirstObject();
+	}
+	
+	/* 
+	 * Updating features
+	 */
+	public void updateDomain(Long domainId, String name, String authorityType, String ttl) throws DNSAPIException {
+		Domain domain = new Domain();
+		domain.getDomainAttributes().setId(domainId);
+		domain.getDomainAttributes().setName(name);
+		domain.getDomainAttributes().setAuthorityType(authorityType);
+		domain.getDomainAttributes().setTTL(ttl);
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.put("/domains/" + domainId + ".json", domain, false, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return;
+	}
+	
+	/* 
+	 * Removing features
+	 */
+	public void removeDomain(Long domainId) throws DNSAPIException {
+		DNSAPIRoot<Domain> dnsAPIRoot = this.delete("/domains/" + domainId + ".json", false, false);
+		if (dnsAPIRoot == null) {
+			throw new DNSAPIException("Invalid response");
+		}
+		return;
+	}
+	
+	
+	////////////////////
+	// Reverse domain //
+	////////////////////
+	
+	/* 
+	 * Recovering features
+	 */
+	public List<Domain> listAllReverse() throws DNSAPIException {
+		// FIXME Reverse flag is being passed in the header,
+		// but DNS API accepts only in the body, even with GET method
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true, true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -41,44 +126,5 @@ public class DomainAPI extends BaseAPI<Domain> {
 			throw new DNSAPIException("Invalid response");
 		}
 		return dnsAPIRoot.getObjectList();
-	}
-	
-	public List<Domain> listAll() throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
-		}
-		return dnsAPIRoot.getObjectList();
-	}
-	
-	public List<Domain> listAllReverse() throws DNSAPIException {
-		// FIXME Reverse flag is being passed in the header,
-		// but DNS API accepts only in the body, even with GET method
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true, true);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
-		}
-		return dnsAPIRoot.getObjectList();
-	}
-
-	public Domain createDomain(String name, Long templateId, String authorityType) throws DNSAPIException {
-		Domain domain = new Domain();
-		domain.getDomainAttributes().setName(name);
-		domain.getDomainAttributes().setTemplateId(templateId);
-		domain.getDomainAttributes().setAuthorityType(authorityType);
-		
-		DNSAPIRoot<Domain> dnsAPIRoot = this.post("/domains.json", domain, false, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
-		}
-		return dnsAPIRoot.getFirstObject();
-	}
-	
-	public void removeDomain(Long domainId) throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.delete("/domains/" + domainId + ".json", false, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
-		}
-		return;
 	}
 }
