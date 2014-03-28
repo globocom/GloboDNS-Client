@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
+import com.globo.dnsapi.api.RecordAPI;
 import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.ErrorMessage;
@@ -99,6 +100,10 @@ public abstract class RequestProcessor {
 	
 	public DomainAPI getDomainAPI() {
 		return new DomainAPI(this);
+	}
+	
+	public RecordAPI getRecordAPI() {
+		return new RecordAPI(this);
 	}
 	
 	public String getToken() {

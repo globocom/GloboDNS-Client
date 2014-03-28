@@ -25,20 +25,75 @@ public class DomainAPI extends BaseAPI<Domain> {
 		return new TypeReference<List<Domain>>() {}.getType();
 	}
 	
-	////////////
-	// Domain //
-	////////////
+	//////////////////
+	// Domain calls //
+	//////////////////
+	public Domain createDomain(String name, Long templateId, String authorityType) throws DNSAPIException {
+		return this.createDomain(name, templateId, authorityType, false);
+	}
 	
+	public List<Domain> listAll() throws DNSAPIException {
+		return this.listAll(false);
+	}
+	
+	public List<Domain> listByQuery(String query) throws DNSAPIException {
+		return this.listByQuery(query, false);
+	}
+	
+	public Domain getById(Long domainId) throws DNSAPIException {
+		return this.getById(domainId, false);
+	}
+	
+	public void updateDomain(Long domainId, String name, String authorityType, String ttl) throws DNSAPIException {
+		this.updateDomain(domainId, name, authorityType, ttl, false);
+	}
+	
+	public void removeDomain(Long domainId) throws DNSAPIException {
+		this.removeDomain(domainId, false);
+	}
+	
+			
+	//////////////////////////
+	// Reverse domain calls //
+	//////////////////////////
+	public Domain createReverseDomain(String name, Long templateId, String authorityType) throws DNSAPIException {
+		return this.createDomain(name, templateId, authorityType, true);
+	}
+	
+	public List<Domain> listAllReverse() throws DNSAPIException {
+		return this.listAll(true);
+	}
+	
+	public List<Domain> listReverseByQuery(String query) throws DNSAPIException {
+		return this.listByQuery(query, true);
+	}
+	
+	public Domain getReverseById(Long domainId) throws DNSAPIException {
+		return this.getById(domainId, true);
+	}
+	
+	public void updateReverseDomain(Long domainId, String name, String authorityType, String ttl) throws DNSAPIException {
+		this.updateDomain(domainId, name, authorityType, ttl, true);
+	}
+	
+	public void removeReverseDomain(Long domainId) throws DNSAPIException {
+		this.removeDomain(domainId, true);
+	}
+	
+	
+	////////////////////
+	// Implementation //
+	////////////////////
 	/* 
 	 * Creating features 
 	 */
-	public Domain createDomain(String name, Long templateId, String authorityType) throws DNSAPIException {
+	private Domain createDomain(String name, Long templateId, String authorityType, boolean reverse) throws DNSAPIException {
 		Domain domain = new Domain();
 		domain.getDomainAttributes().setName(name);
 		domain.getDomainAttributes().setTemplateId(templateId);
 		domain.getDomainAttributes().setAuthorityType(authorityType);
 		
-		DNSAPIRoot<Domain> dnsAPIRoot = this.post("/domains.json", domain, false);
+		DNSAPIRoot<Domain> dnsAPIRoot = this.post("/domains.json" + (reverse ? "?reverse=true" : ""), domain, false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -48,24 +103,32 @@ public class DomainAPI extends BaseAPI<Domain> {
 	/* 
 	 * Recovering features
 	 */
-	public List<Domain> listAll() throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true);
+	private List<Domain> listAll(boolean reverse) throws DNSAPIException {
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json" + (reverse ? "?reverse=true" : ""), true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
 		return dnsAPIRoot.getObjectList();
 	}
 	
-	public List<Domain> listByName(String domainName) throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + domainName, true);
+	private List<Domain> listByQuery(String query, boolean reverse) throws DNSAPIException {
+		if (query == null) {
+			throw new DNSAPIException("Query cannot be null");
+		}
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + query + (reverse ? "&reverse=true" : ""), true);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
 		return dnsAPIRoot.getObjectList();
 	}
 	
-	public Domain getById(Long domainId) throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains/" + domainId + ".json", false);
+	private Domain getById(Long domainId, boolean reverse) throws DNSAPIException {
+		if (domainId == null) {
+			throw new DNSAPIException("Domain id cannot be null");
+		}
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains/" + domainId + ".json" + (reverse ? "?reverse=true" : ""), false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -75,14 +138,20 @@ public class DomainAPI extends BaseAPI<Domain> {
 	/* 
 	 * Updating features
 	 */
-	public void updateDomain(Long domainId, String name, String authorityType, String ttl) throws DNSAPIException {
-		Domain domain = new Domain();
-		domain.getDomainAttributes().setId(domainId);
-		domain.getDomainAttributes().setName(name);
-		domain.getDomainAttributes().setAuthorityType(authorityType);
-		domain.getDomainAttributes().setTTL(ttl);
+	private void updateDomain(Long domainId, String name, String authorityType, String ttl, boolean reverse) throws DNSAPIException {
+		if (domainId == null) {
+			throw new DNSAPIException("Domain id cannot be null");
+		}
 		
-		DNSAPIRoot<Domain> dnsAPIRoot = this.put("/domains/" + domainId + ".json", domain, false);
+		Domain domain = new Domain();
+		if (name != null)
+			domain.getDomainAttributes().setName(name);
+		if (authorityType != null)
+			domain.getDomainAttributes().setAuthorityType(authorityType);
+		if (ttl != null)
+			domain.getDomainAttributes().setTTL(ttl);
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.put("/domains/" + domainId + ".json" + (reverse ? "?reverse=true" : ""), domain, false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
@@ -92,41 +161,15 @@ public class DomainAPI extends BaseAPI<Domain> {
 	/* 
 	 * Removing features
 	 */
-	public void removeDomain(Long domainId) throws DNSAPIException {
-		DNSAPIRoot<Domain> dnsAPIRoot = this.delete("/domains/" + domainId + ".json", false);
+	private void removeDomain(Long domainId, boolean reverse) throws DNSAPIException {
+		if (domainId == null) {
+			throw new DNSAPIException("Domain id cannot be null");
+		}
+		
+		DNSAPIRoot<Domain> dnsAPIRoot = this.delete("/domains/" + domainId + ".json" + (reverse ? "?reverse=true" : ""), false);
 		if (dnsAPIRoot == null) {
 			throw new DNSAPIException("Invalid response");
 		}
 		return;
 	}
-	
-	
-	////////////////////
-	// Reverse domain //
-	////////////////////
-	
-	// FIXME Reverse not working! Need to fix the API to accept a reverse parameter with GET method
-	
-	/* 
-	 * Recovering features
-	 */
-//	public List<Domain> listAllReverse() throws DNSAPIException {
-//		// FIXME Reverse flag is being passed in the header,
-//		// but DNS API accepts only in the body, even with GET method
-//		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json", true);
-//		if (dnsAPIRoot == null) {
-//			throw new DNSAPIException("Invalid response");
-//		}
-//		return dnsAPIRoot.getObjectList();
-//	}
-//	
-//	public List<Domain> listReverseByName(String reverseDomain) throws DNSAPIException {
-//		// FIXME Reverse flag is being passed in the header,
-//		// but DNS API accepts only in the body, even with GET method
-//		DNSAPIRoot<Domain> dnsAPIRoot = this.get("/domains.json?query=" + reverseDomain, true);
-//		if (dnsAPIRoot == null) {
-//			throw new DNSAPIException("Invalid response");
-//		}
-//		return dnsAPIRoot.getObjectList();
-//	}
 }

@@ -95,7 +95,7 @@ public class DNSAPIFlowTest {
 		
 		
 		// Step 3: List the domain we want - domainName
-		domainList = this.domainAPI.listByName(domainName);
+		domainList = this.domainAPI.listByQuery(domainName);
 		assertNotNull(domainList);
 		assertEquals(1, domainList.size());
 		

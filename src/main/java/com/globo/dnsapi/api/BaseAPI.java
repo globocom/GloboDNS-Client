@@ -36,9 +36,9 @@ public abstract class BaseAPI<T> {
 		this.getTransport().setToken(token);
 	}
 	
-	protected DNSAPIRoot<T> get(String suffixUrl, boolean isList) throws DNSAPIException {
+	protected DNSAPIRoot<T> get(String suffixUrl, boolean returnsList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
-		if (isList) {
+		if (returnsList) {
 			answer = this.getTransport().get(suffixUrl, getHttpHeaders(), getListType());
 		} else {
 			answer = this.getTransport().get(suffixUrl, getHttpHeaders(), getType());
@@ -46,9 +46,9 @@ public abstract class BaseAPI<T> {
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> post(String suffixUrl, Object payload , boolean isList) throws DNSAPIException {
+	protected DNSAPIRoot<T> post(String suffixUrl, Object payload , boolean returnsList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
-		if (isList) {
+		if (returnsList) {
 			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(), getListType());	
 		} else {
 			answer = this.getTransport().post(suffixUrl, payload, getHttpHeaders(), getType());
@@ -56,9 +56,9 @@ public abstract class BaseAPI<T> {
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> put(String suffixUrl, Object payload, boolean isList) throws DNSAPIException {
+	protected DNSAPIRoot<T> put(String suffixUrl, Object payload, boolean returnsList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
-		if (isList) {
+		if (returnsList) {
 			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(), getListType());
 		} else {
 			answer = this.getTransport().put(suffixUrl, payload, getHttpHeaders(), getType());
@@ -66,9 +66,9 @@ public abstract class BaseAPI<T> {
 		return answer;
 	}
 	
-	protected DNSAPIRoot<T> delete(String suffixUrl, boolean isList) throws DNSAPIException {
+	protected DNSAPIRoot<T> delete(String suffixUrl, boolean returnsList) throws DNSAPIException {
 		DNSAPIRoot<T> answer;
-		if (isList) {
+		if (returnsList) {
 			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(), getListType());
 		} else {
 			answer = this.getTransport().delete(suffixUrl, getHttpHeaders(), getType());
