@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
+import com.globo.dnsapi.api.ExportAPI;
 import com.globo.dnsapi.api.RecordAPI;
 import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.model.DNSAPIRoot;
@@ -104,6 +105,10 @@ public abstract class RequestProcessor {
 	
 	public RecordAPI getRecordAPI() {
 		return new RecordAPI(this);
+	}
+	
+	public ExportAPI getExportAPI() {
+		return new ExportAPI(this);
 	}
 	
 	public String getToken() {
