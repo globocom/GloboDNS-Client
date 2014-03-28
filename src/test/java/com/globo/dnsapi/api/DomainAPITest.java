@@ -181,4 +181,17 @@ public class DomainAPITest {
 		
 		this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
 	}
+	
+	@Test
+	public void testCreateReverseDomain() throws DNSAPIException {
+		String newReverseDomainName = "0.10.10.in-addr.arpa";
+		String newReverseAuthType = "M";
+		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json?reverse=true", 
+				"{\"domain\":{\"account\":null,\"addressing_type\":\"R\",\"authority_type\":\"M\",\"created_at\":\"2014-03-28T20:40:34Z\",\"id\":20,\"last_check\":null,\"master\":null,\"name\":\"0.10.10.in-addr.arpa\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-28T20:40:34Z\",\"user_id\":null,\"view_id\":null}}");
+		
+		Domain createdReverseDomain = this.domainAPI.createReverseDomain(newReverseDomainName, 1L, newReverseAuthType);
+		assertNotNull(createdReverseDomain);
+		assertEquals(newReverseDomainName, createdReverseDomain.getName());
+		assertEquals(newReverseAuthType, createdReverseDomain.getAuthorityType());
+	}
 }
