@@ -32,13 +32,4 @@ public class ExportAPI extends BaseAPI<Export> {
 		}
 		return dnsAPIRoot.getFirstObject();
 	}
-	
-	public Export export(boolean now, boolean all) throws DNSAPIException {
-		String params = "{\"now\":\"" + now + "\", \"all\":\"" + all + "\"}";
-		DNSAPIRoot<Export> dnsAPIRoot = this.post("/bind9/export.json", params, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
-		}
-		return dnsAPIRoot.getFirstObject();
-	}
 }

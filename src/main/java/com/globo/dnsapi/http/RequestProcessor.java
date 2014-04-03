@@ -81,7 +81,11 @@ public abstract class RequestProcessor {
 		} else if (statusCode/100 == 4 || statusCode/100 == 5) {
 			// 400 and 500 family codes
 			// Something was wrong, produce an error result
-			// This assumes error is well formed and mappable to class ErrorMessage
+			if (responseAsString == null || !responseAsString.startsWith("{")) {
+				// Response not well formed!
+				throw new DNSAPIException("Unknown error in DNS API: " + responseAsString);
+			}
+			
 			DNSAPIRoot<ErrorMessage> response = this.parseJson(responseAsString, ErrorMessage.class);
 			ErrorMessage errorMsg = response.getFirstObject();
 			if (errorMsg != null && errorMsg.getMsg() != null) {

@@ -32,31 +32,4 @@ public class ExportAPITest {
 		Export export = this.exportAPI.scheduleExport();
 		assertNotNull(export);
 	}
-	
-	@Test
-	public void testExportNoExportScheduled() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.POST, "/bind9/export.json", 
-				"{\"output\":\"No BIND export scheduled.\"}");
-		
-		Export export = this.exportAPI.export(false, false);
-		assertNotNull(export);
-	}
-	
-	@Test
-	public void testExportWithExportScheduled() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.POST, "/bind9/export.json", 
-				"{\"output\":\"BIND export scheduled for 2012-07-14 02:35:00 -0300\"}");
-		
-		Export export = this.exportAPI.export(false, false);
-		assertNotNull(export);
-	}
-	
-	@Test
-	public void testExportWithNowParameter() throws DNSAPIException {
-		this.rp.registerFakeRequest(HttpMethod.POST, "/bind9/export.json", 
-				"{\"output\":\"Successful\"}");
-		
-		Export export = this.exportAPI.export(true, false);
-		assertNotNull(export);
-	}
 }

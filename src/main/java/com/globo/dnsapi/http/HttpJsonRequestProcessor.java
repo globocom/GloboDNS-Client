@@ -93,7 +93,7 @@ public class HttpJsonRequestProcessor extends RequestProcessor {
 			responseAsString = httpResponse.parseAsString();
 		} catch (HttpResponseException e) {
 			httpStatusCode = e.getStatusCode();
-			responseAsString = e.getContent();
+			responseAsString = e.getMessage();
 		}
 		handleExceptionIfNeeded(httpStatusCode, responseAsString);
 		return responseAsString;
