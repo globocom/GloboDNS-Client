@@ -25,12 +25,6 @@ public class DNSAPIFactory {
 		this.httpTransport = httpTransport;
 	}
 
-	@Deprecated
-	public DNSAPIFactory(String baseUrl) {
-		this(new NetHttpTransport());
-		this.setBaseUrl(baseUrl);
-	}
-
 	public static DNSAPIFactory buildHttpApi(String baseUrl, String userName, String password) {
 		DNSAPIFactory apiFactory = new DNSAPIFactory(new NetHttpTransport());
 		apiFactory.setBaseUrl(baseUrl);
