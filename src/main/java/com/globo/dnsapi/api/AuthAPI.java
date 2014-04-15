@@ -29,10 +29,10 @@ public class AuthAPI extends AbstractAPI<Authentication> {
 	}
 	
 	@Override
-	protected void insertAuthenticationHeaders(HttpRequest request) {
-		// do nothing
+	protected void interceptRequest(HttpRequest request) {
+		request.setUnsuccessfulResponseHandler(null);
 	}
-
+	
 	public Authentication signIn(String email, String password) throws DNSAPIException {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();

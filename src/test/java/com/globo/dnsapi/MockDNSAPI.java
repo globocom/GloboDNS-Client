@@ -44,15 +44,24 @@ public class MockDNSAPI extends DNSAPI {
 		((SimulatedHttpTransport)this.getHttpTransport()).registerFakeRequest(method, this.getBaseUrl() + url, statusCode, expectedResult);
 	}
 	
+	public int numberOfRequests(HttpMethod method, String url) {
+		return ((SimulatedHttpTransport)this.getHttpTransport()).numberOfRequests(method.name(), url);
+	}
+	
+	public int totalNumberOfRequests() {
+		return ((SimulatedHttpTransport)this.getHttpTransport()).totalNumberOfRequests();
+	}
+	
 	private static class SimulatedHttpTransport extends MockHttpTransport {
-		final Map<String, MockLowLevelHttpResponse> urlVsResponse = new HashMap<String, MockLowLevelHttpResponse>();
+		private int totalNumberOfRequests = 0;
+		final Map<String, CounterMockLowLevelHttpResponse> urlVsResponse = new HashMap<String, CounterMockLowLevelHttpResponse>();
 		
 		public void registerFakeRequest(HttpMethod method, String url, int statusCode, String expectedResult) {
 			String key = method.name() + " " + url;
 //			if (this.urlVsResponse.containsKey(key)) {
 //				throw new IllegalArgumentException("Request " + key + " already exists.");
 //			}
-			MockLowLevelHttpResponse fakeResponse = new MockLowLevelHttpResponse();
+			CounterMockLowLevelHttpResponse fakeResponse = new CounterMockLowLevelHttpResponse();
 			fakeResponse.setStatusCode(statusCode);
 			fakeResponse.setContent(expectedResult);
 			this.urlVsResponse.put(key, fakeResponse);
@@ -62,13 +71,31 @@ public class MockDNSAPI extends DNSAPI {
 		public LowLevelHttpRequest buildRequest(String method, String url)
 				throws IOException {
 			MockLowLevelHttpRequest request = (MockLowLevelHttpRequest) super.buildRequest(method, url);
-			MockLowLevelHttpResponse response = this.urlVsResponse.get(method.toUpperCase() + " " + url);
+			CounterMockLowLevelHttpResponse response = this.urlVsResponse.get(method.toUpperCase() + " " + url);
 			if (response == null) {
 				throw new RuntimeException("Invalid url: " + url);
 			}
 			request.setResponse(response);
+			response.numberOfRequests++;
+			totalNumberOfRequests++;
 			return request;
 		}
 		
+		public int totalNumberOfRequests() {
+			return this.totalNumberOfRequests;
+		}
+
+		public int numberOfRequests(String method, String url) {
+			CounterMockLowLevelHttpResponse response = this.urlVsResponse.get(method.toUpperCase() + " " + url);
+			if (response == null) {
+				throw new RuntimeException("Invalid url: " + url);
+			}
+			return response.numberOfRequests;
+		}
+
+	}
+	
+	public static class CounterMockLowLevelHttpResponse extends MockLowLevelHttpResponse {
+		int numberOfRequests = 0;
 	}
 }
