@@ -4,14 +4,15 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.exception.DNSAPIException;
-import com.globo.dnsapi.http.RequestProcessor;
+import com.globo.dnsapi.AbstractAPI;
+import com.globo.dnsapi.DNSAPIException;
+import com.globo.dnsapi.DNSAPIFactory;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.Domain;
 
-public class DomainAPI extends BaseAPI<Domain> {
+public class DomainAPI extends AbstractAPI<Domain> {
 	
-	public DomainAPI(RequestProcessor transport) {
+	public DomainAPI(DNSAPIFactory transport) {
 		super(transport);
 	}
 

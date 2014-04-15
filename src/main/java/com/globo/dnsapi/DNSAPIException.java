@@ -1,6 +1,6 @@
-package com.globo.dnsapi.exception;
+package com.globo.dnsapi;
 
-public class DNSAPIException extends Exception {
+public class DNSAPIException extends RuntimeException {
 
 	private static final long serialVersionUID = 5686288460895537688L;
 

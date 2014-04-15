@@ -4,15 +4,17 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.exception.DNSAPIException;
-import com.globo.dnsapi.http.RequestProcessor;
+import com.globo.dnsapi.AbstractAPI;
+import com.globo.dnsapi.DNSAPIException;
+import com.globo.dnsapi.DNSAPIFactory;
 import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.User;
+import com.google.api.client.http.HttpRequest;
 
-public class AuthAPI extends BaseAPI<Authentication> {
+public class AuthAPI extends AbstractAPI<Authentication> {
 
-	public AuthAPI(RequestProcessor transport) {
+	public AuthAPI(DNSAPIFactory transport) {
 		super(transport);
 	}
 	
@@ -26,6 +28,11 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		return new TypeReference<List<Authentication>>() {}.getType();
 	}
 	
+	@Override
+	protected void insertAuthenticationHeaders(HttpRequest request) {
+		// do nothing
+	}
+
 	public Authentication signIn(String email, String password) throws DNSAPIException {
 		User user = new User(email, password);
 		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
@@ -36,8 +43,6 @@ public class AuthAPI extends BaseAPI<Authentication> {
 		}
 
 		Authentication auth = dnsAPIRoot.getFirstObject();
-		// Setup token for future accesses by other APIs
-		this.setToken(auth.getToken());
 		return auth;
 	}
 }

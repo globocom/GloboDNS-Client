@@ -4,14 +4,15 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.exception.DNSAPIException;
-import com.globo.dnsapi.http.RequestProcessor;
+import com.globo.dnsapi.AbstractAPI;
+import com.globo.dnsapi.DNSAPIException;
+import com.globo.dnsapi.DNSAPIFactory;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.Record;
 
-public class RecordAPI extends BaseAPI<Record> {
+public class RecordAPI extends AbstractAPI<Record> {
 
-	public RecordAPI(RequestProcessor transport) {
+	public RecordAPI(DNSAPIFactory transport) {
 		super(transport);
 	}
 	

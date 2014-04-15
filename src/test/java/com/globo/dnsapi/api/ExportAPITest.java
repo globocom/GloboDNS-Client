@@ -7,20 +7,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.TestRequestProcessor;
-import com.globo.dnsapi.TestRequestProcessor.HttpMethod;
-import com.globo.dnsapi.exception.DNSAPIException;
+import com.globo.dnsapi.DNSAPIException;
+import com.globo.dnsapi.TestDNSAPIFactory;
+import com.globo.dnsapi.TestDNSAPIFactory.HttpMethod;
 import com.globo.dnsapi.model.Export;
 
 @RunWith(JUnit4.class)
 public class ExportAPITest {
 
 	private ExportAPI exportAPI;
-	private TestRequestProcessor rp;
+	private TestDNSAPIFactory rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = new TestRequestProcessor();
+		this.rp = new TestDNSAPIFactory();
 		this.exportAPI = this.rp.getExportAPI();
 	}
 	

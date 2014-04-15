@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.TestRequestProcessor;
-import com.globo.dnsapi.TestRequestProcessor.HttpMethod;
+import com.globo.dnsapi.DNSAPIException;
+import com.globo.dnsapi.TestDNSAPIFactory;
+import com.globo.dnsapi.TestDNSAPIFactory.HttpMethod;
 import com.globo.dnsapi.api.AuthAPI;
 import com.globo.dnsapi.api.DomainAPI;
-import com.globo.dnsapi.exception.DNSAPIException;
 import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.Domain;
 
@@ -23,11 +23,11 @@ public class DNSAPIFlowTest {
 	
 	private AuthAPI authAPI;
 	private DomainAPI domainAPI;
-	private TestRequestProcessor rp;
+	private TestDNSAPIFactory rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = new TestRequestProcessor();
+		this.rp = new TestDNSAPIFactory();
 		this.authAPI = this.rp.getAuthAPI();
 		this.domainAPI = this.rp.getDomainAPI();
 	}
