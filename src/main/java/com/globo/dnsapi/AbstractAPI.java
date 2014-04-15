@@ -30,20 +30,20 @@ public abstract class AbstractAPI<T> {
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	static final JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 
-	private final DNSAPIFactory apiFactory;
+	private final DNSAPI dnsapi;
 
 	private HttpRequestFactory requestFactory;
 	
-	protected AbstractAPI(DNSAPIFactory apiFactory) {
-		if (apiFactory == null) {
-			throw new IllegalArgumentException("No apiFactory configured");
+	protected AbstractAPI(DNSAPI dnsapi) {
+		if (dnsapi == null) {
+			throw new IllegalArgumentException("No DNSAPI configured");
 		}
-		this.apiFactory = apiFactory;
+		this.dnsapi = dnsapi;
 		this.requestFactory = this.buildHttpRequestFactory();
 	}
 	
-	protected DNSAPIFactory getApiFactory() {
-		return this.apiFactory;
+	protected DNSAPI getDnsapi() {
+		return this.dnsapi;
 	}
 	
 	protected abstract Type getType();
@@ -55,7 +55,7 @@ public abstract class AbstractAPI<T> {
 	 * @return new instance of HttpRequestFactory
 	 */
 	protected HttpRequestFactory buildHttpRequestFactory() {
-		HttpRequestFactory request = this.getApiFactory().getHttpTransport().createRequestFactory(new HttpRequestInitializer() {
+		HttpRequestFactory request = this.getDnsapi().getHttpTransport().createRequestFactory(new HttpRequestInitializer() {
 			@Override
 			public void initialize(HttpRequest request) throws IOException {
 				request.setNumberOfRetries(1);
@@ -68,7 +68,7 @@ public abstract class AbstractAPI<T> {
 					public boolean handleResponse(HttpRequest request, HttpResponse response,
 							boolean supportsRetry) throws IOException {
 						if (response.getStatusCode() == 401) {
-							getApiFactory().clearToken();
+							getDnsapi().clearToken();
 							
 							if (supportsRetry) {
 								// only if supports retry I will prepare request with a new token, and ask to retry
@@ -106,7 +106,7 @@ public abstract class AbstractAPI<T> {
 
 	protected void insertAuthenticationHeaders(HttpRequest request) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Auth-Token", this.getApiFactory().requestToken());
+		headers.set("X-Auth-Token", this.getDnsapi().requestToken());
 		request.setHeaders(headers);
 	}
 
@@ -197,7 +197,7 @@ public abstract class AbstractAPI<T> {
 	}
 	
 	protected GenericUrl buildUrl(String suffixUrl) {
-		return new GenericUrl(this.apiFactory.getBaseUrl() + suffixUrl);
+		return new GenericUrl(this.dnsapi.getBaseUrl() + suffixUrl);
 	}
 	
 	protected DNSAPIRoot<T> get(String suffixUrl, boolean returnsList) throws DNSAPIException {

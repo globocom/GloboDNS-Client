@@ -14,18 +14,18 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.TestDNSAPIFactory.HttpMethod;
+import com.globo.dnsapi.MockDNSAPI.HttpMethod;
 import com.globo.dnsapi.model.DNSAPIRoot;
 
 @RunWith(JUnit4.class)
 public class AbstractAPITest {
 
 	private TestAPI testApi;
-	private TestDNSAPIFactory rp;
+	private MockDNSAPI rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = spy(new TestDNSAPIFactory());
+		this.rp = spy(new MockDNSAPI());
 		this.testApi = new TestAPI(this.rp);
 	}
 
@@ -51,7 +51,7 @@ public class AbstractAPITest {
 	
 	public static class TestAPI extends AbstractAPI<String> {
 
-		protected TestAPI(DNSAPIFactory apiFactory) {
+		protected TestAPI(DNSAPI apiFactory) {
 			super(apiFactory);
 		}
 

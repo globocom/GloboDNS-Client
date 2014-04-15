@@ -11,20 +11,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.TestDNSAPIFactory;
-import com.globo.dnsapi.TestDNSAPIFactory.HttpMethod;
+import com.globo.dnsapi.MockDNSAPI;
+import com.globo.dnsapi.MockDNSAPI.HttpMethod;
 import com.globo.dnsapi.model.Record;
 
 @RunWith(JUnit4.class)
 public class RecordAPITest {
 
 	private RecordAPI recordAPI;
-	private TestDNSAPIFactory rp;
+	private MockDNSAPI rp;
 	private Long domainId = 2000L; 
 	
 	@Before
 	public void setUp() {
-		this.rp = new TestDNSAPIFactory();
+		this.rp = new MockDNSAPI();
 		this.recordAPI = this.rp.getRecordAPI();
 	}
 		

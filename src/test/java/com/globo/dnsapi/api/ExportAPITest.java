@@ -8,19 +8,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.TestDNSAPIFactory;
-import com.globo.dnsapi.TestDNSAPIFactory.HttpMethod;
+import com.globo.dnsapi.MockDNSAPI;
+import com.globo.dnsapi.MockDNSAPI.HttpMethod;
 import com.globo.dnsapi.model.Export;
 
 @RunWith(JUnit4.class)
 public class ExportAPITest {
 
 	private ExportAPI exportAPI;
-	private TestDNSAPIFactory rp;
+	private MockDNSAPI rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = new TestDNSAPIFactory();
+		this.rp = new MockDNSAPI();
 		this.exportAPI = this.rp.getExportAPI();
 	}
 	

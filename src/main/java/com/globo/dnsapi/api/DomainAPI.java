@@ -6,13 +6,13 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.globo.dnsapi.AbstractAPI;
 import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.DNSAPIFactory;
+import com.globo.dnsapi.DNSAPI;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.Domain;
 
 public class DomainAPI extends AbstractAPI<Domain> {
 	
-	public DomainAPI(DNSAPIFactory transport) {
+	public DomainAPI(DNSAPI transport) {
 		super(transport);
 	}
 

@@ -17,11 +17,11 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse;
  * @author snbuback
  *
  */
-public class TestDNSAPIFactory extends DNSAPIFactory {
+public class MockDNSAPI extends DNSAPI {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestDNSAPIFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MockDNSAPI.class);
 	
-	public TestDNSAPIFactory() {
+	public MockDNSAPI() {
 		super(new SimulatedHttpTransport());
 		this.setBaseUrl("http://example.com");
 	}

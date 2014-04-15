@@ -11,9 +11,9 @@ import com.globo.dnsapi.model.Authentication;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-public class DNSAPIFactory {
+public class DNSAPI {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(DNSAPIFactory.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(DNSAPI.class);
 
 	private final HttpTransport httpTransport;
 	private String baseUrl;
@@ -21,12 +21,12 @@ public class DNSAPIFactory {
 	private String password;
 	private String token;
 
-	protected DNSAPIFactory(HttpTransport httpTransport) {
+	protected DNSAPI(HttpTransport httpTransport) {
 		this.httpTransport = httpTransport;
 	}
 
-	public static DNSAPIFactory buildHttpApi(String baseUrl, String userName, String password) {
-		DNSAPIFactory apiFactory = new DNSAPIFactory(new NetHttpTransport());
+	public static DNSAPI buildHttpApi(String baseUrl, String userName, String password) {
+		DNSAPI apiFactory = new DNSAPI(new NetHttpTransport());
 		apiFactory.setBaseUrl(baseUrl);
 		apiFactory.setUserName(userName);
 		apiFactory.setPassword(password);

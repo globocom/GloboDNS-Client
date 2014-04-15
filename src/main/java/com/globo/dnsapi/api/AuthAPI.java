@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.globo.dnsapi.AbstractAPI;
 import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.DNSAPIFactory;
+import com.globo.dnsapi.DNSAPI;
 import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.DNSAPIRoot;
 import com.globo.dnsapi.model.User;
@@ -14,7 +14,7 @@ import com.google.api.client.http.HttpRequest;
 
 public class AuthAPI extends AbstractAPI<Authentication> {
 
-	public AuthAPI(DNSAPIFactory transport) {
+	public AuthAPI(DNSAPI transport) {
 		super(transport);
 	}
 	
