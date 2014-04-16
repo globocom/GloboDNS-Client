@@ -42,7 +42,6 @@ public class DNSAPIFlowTest {
 		String newDomainName = "newdomain.com";
 		String newAuthType = "M";
 		
-		
 		// Step 0: Register all fake requests that will be made throughout the test
 		this.rp.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
 				"{\"authentication_token\":\"Xjn5GEsYsQySAsr7APqj\",\"id\":1}");

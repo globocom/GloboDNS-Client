@@ -28,7 +28,7 @@ public class Simulation {
 
 	public static void main(String[] args) throws DNSAPIException {
 		String baseUrl = "http://example.com/";
-		String email = "admin@example.com";
+		String email = "admin@globoi.com";
 		String password = "password";
 		
 		LOGGER.info("Using url " + baseUrl);
@@ -129,12 +129,21 @@ public class Simulation {
 		assertNotNull(createdRecord);
 		LOGGER.info("Record created successfully with id=" + createdRecord.getId());
 		
+		// Step 9: Create TXT record on the created domain
+		String recordNameTxt = "cloudstack-network";
+		String recordContentTxt = "df83j-dfy8";
+		LOGGER.info("Creating TXT record with name=" + recordNameTxt + " and content=" + recordContentTxt);
+		Record recordtxt = recordAPI.createRecord(domain.getId(), recordNameTxt, recordNameTxt, "TXT");
 		
-		// Step 9: Remove all records on the created domain
+		assertNotNull(recordtxt);
+		LOGGER.info("Record created successfully with id=" + recordtxt.getId());
+		
+		
+		// Step 10: Remove all records on the created domain
 		LOGGER.info("Removing all records on the created domain");
 		recordList = recordAPI.listAll(domain.getId());
 		assertNotNull(recordList);
-		assertEquals(3, recordList.size()); // 2 by default + 1 just created
+		assertEquals(4, recordList.size()); // 2 by default + 1 just created
 		for (Record record : recordList) {
 			LOGGER.info(">> Removing record " + record.getName());
 			recordAPI.removeRecord(record.getId());
@@ -142,7 +151,7 @@ public class Simulation {
 		LOGGER.info("Removed " + recordList.size() + " records");
 		
 		
-		// Step 10: Remove the created domain
+		// Step 11: Remove the created domain
 		LOGGER.info("Removing domain with name=" + domain.getName() + " and id=" + domain.getId());
 		domainAPI.removeDomain(domain.getId());
 		LOGGER.info("Domain removed successfully");

@@ -121,4 +121,19 @@ public class RecordAPITest {
 			assertEquals("NOT FOUND", ex.getMessage());
 		}
 	}
+
+	@Test
+	public void testGetTxtRecordById() throws DNSAPIException {
+		Long recordId = 188564L;
+		this.rp.registerFakeRequest(HttpMethod.GET, "/records/" + recordId + ".json", 
+				"{\"txt\":{\"content\":\"n7sbs83-fd83d7-d-d734-dds-3e3d-33\",\"created_at\":\"2014-04-16T22:27:46Z\",\"domain_id\":5101,\"id\":188564,\"name\":\"cloudstack-network\",\"prio\":null,\"ttl\":\"\",\"updated_at\":\"2014-04-16T22:27:46Z\"}}");
+		
+		Record record = this.recordAPI.getById(recordId);
+		assertNotNull(record);
+		assertEquals(recordId, record.getId());
+		assertEquals("cloudstack-network", record.getName());
+		assertEquals("n7sbs83-fd83d7-d-d734-dds-3e3d-33", record.getContent());
+	}
+	
+
 }

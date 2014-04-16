@@ -20,7 +20,10 @@ public class Record {
 	
 	@Key("ptr")
 	private TypePTRRecordAttributes typePTRRecordAttributes;
-	
+
+	@Key("txt")
+	private TypeTXTRecordAttributes typeTXTRecordAttributes;
+
 	public GenericRecordAttributes getGenericRecordAttributes() {
 		return this.genericRecordAttributes;
 	}
@@ -69,6 +72,14 @@ public class Record {
 		this.typePTRRecordAttributes = typePTRRecordAttributes;
 	}
 	
+	public TypeTXTRecordAttributes getTypeTXTRecordAttributes() {
+		return this.typeTXTRecordAttributes;
+	}
+	
+	public void setTypeTXTRecordAttributes(TypeTXTRecordAttributes typeTXTRecordAttributes) {
+		this.typeTXTRecordAttributes = typeTXTRecordAttributes;
+	}
+
 	public Record() {
 		this.genericRecordAttributes = new GenericRecordAttributes();
 		this.typeARecordAttributes = new TypeARecordAttributes();
@@ -76,6 +87,7 @@ public class Record {
 		this.typeSOARecordAttributes = new TypeSOARecordAttributes();
 		this.typeMXRecordAttributes = new TypeMXRecordAttributes();
 		this.typePTRRecordAttributes = new TypePTRRecordAttributes();
+		this.typeTXTRecordAttributes = new TypeTXTRecordAttributes();
 	}
 	
 	
@@ -96,6 +108,8 @@ public class Record {
 			return this.typeMXRecordAttributes.getId();
 		} else if (this.typePTRRecordAttributes.getId() != null) {
 			return this.typePTRRecordAttributes.getId();
+		} else if (this.typeTXTRecordAttributes.getId() != null) {
+			return this.typeTXTRecordAttributes.getId();
 		} else {
 			return null;
 		}
@@ -114,6 +128,8 @@ public class Record {
 			return this.typeMXRecordAttributes.getName();
 		} else if (this.typePTRRecordAttributes.getName() != null) {
 			return this.typePTRRecordAttributes.getName();
+		} else if (this.typeTXTRecordAttributes.getName() != null) {
+			return this.typeTXTRecordAttributes.getName();
 		} else {
 			return null;
 		}
@@ -132,6 +148,8 @@ public class Record {
 			return this.typeMXRecordAttributes.getContent();
 		} else if (this.typePTRRecordAttributes.getContent() != null) {
 			return this.typePTRRecordAttributes.getContent();
+		} else if (this.typeTXTRecordAttributes.getContent() != null) {
+			return this.typeTXTRecordAttributes.getContent();
 		} else {
 			return null;
 		}
@@ -289,6 +307,13 @@ public class Record {
 	// Type PTR Record Attributes //
 	///////////////////////////////
 	public static class TypePTRRecordAttributes extends GenericRecordAttributes {
+		// Same attributes as super class
+	}
+
+	///////////////////////////////
+	// Type PTR Record Attributes //
+	///////////////////////////////
+	public static class TypeTXTRecordAttributes extends GenericRecordAttributes {
 		// Same attributes as super class
 	}
 }
