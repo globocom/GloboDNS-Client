@@ -1,3 +1,4 @@
+package com.globo.dnsapi.flow;
 
 
 import static org.junit.Assert.assertEquals;
@@ -17,9 +18,9 @@ import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.Domain;
 import com.globo.dnsapi.model.Record;
 
-public class Simulate {
+public class Simulation {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Simulate.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Simulation.class);
 
 	public static void main(String[] args) throws DNSAPIException {
 		String baseUrl = "http://example.com/";

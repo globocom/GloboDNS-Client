@@ -142,7 +142,7 @@ public abstract class AbstractAPI<T> {
 				throw new DNSAPIException("Unknown error in DNS API: " + responseAsString);
 			}
 			
-			DNSAPIRoot<ErrorMessage> responseObj = this.parse(response, ErrorMessage.class);
+			DNSAPIRoot<ErrorMessage> responseObj = this.parse(responseAsString, ErrorMessage.class);
 			ErrorMessage errorMsg = responseObj.getFirstObject();
 			if (errorMsg != null && errorMsg.getMsg() != null) {
 				throw new DNSAPIException(errorMsg.getMsg());
@@ -163,23 +163,22 @@ public abstract class AbstractAPI<T> {
 	 * @throws DNSAPIException
 	 */
 	@SuppressWarnings("unchecked")
-	protected <E> DNSAPIRoot<E> parse(HttpResponse response, Type type) throws DNSAPIException {
+	protected <E> DNSAPIRoot<E> parse(String responseAsString, Type type) throws DNSAPIException {
 		try {			
 			DNSAPIRoot<E> dnsAPIRoot = new DNSAPIRoot<E>();
 			
-			String inputContent = response.parseAsString();
-			if ("".equalsIgnoreCase(inputContent)) {
+			if ("".equalsIgnoreCase(responseAsString)) {
 				// Empty response, just return empty object
 				return dnsAPIRoot;
 			}
 			
 			boolean isList = false;
-			if (inputContent.startsWith("[") && inputContent.endsWith("]")) {
+			if (responseAsString.startsWith("[") && responseAsString.endsWith("]")) {
 				// This means it's a list
 				isList = true;
 			}
 			
-			Reader in = new StringReader(inputContent);
+			Reader in = new StringReader(responseAsString);
 		
 			if (isList) {
 				List<E> retList = (List<E>) parser.parseAndClose(in, type);
@@ -191,6 +190,14 @@ public abstract class AbstractAPI<T> {
 			
 			return dnsAPIRoot;
 
+		} catch (IOException e) {
+			throw new DNSAPIException("IOError: " + e.getMessage(), e);
+		}
+	}
+	
+	protected <E> DNSAPIRoot<E> parse(HttpResponse response, Type type) throws DNSAPIException {
+		try {
+			return this.parse(response.parseAsString(), type);
 		} catch (IOException e) {
 			throw new DNSAPIException("IOError: " + e.getMessage(), e);
 		}

@@ -1,7 +1,6 @@
 package com.globo.dnsapi.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -178,7 +177,7 @@ public class DomainAPITest {
 		String newAuthType = "M";
 		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 422,
 				"{\"errors\":{\"name\":[\"has already been taken\"]}}");
-		
+
 		this.domainAPI.createDomain(newDomainName, 1L, newAuthType);
 	}
 	
@@ -193,5 +192,31 @@ public class DomainAPITest {
 		assertNotNull(createdReverseDomain);
 		assertEquals(newReverseDomainName, createdReverseDomain.getName());
 		assertEquals(newReverseAuthType, createdReverseDomain.getAuthorityType());
+	}
+	
+	@Test
+	public void testRemoveDomainNotFound() throws DNSAPIException {
+		Long domainId = 1L;
+		this.rp.registerFakeRequest(HttpMethod.DELETE, "/domains/" + domainId + ".json", 404, "{\"error\":\"NOT FOUND\"}");
+		
+		try {
+			this.domainAPI.removeDomain(domainId);
+			fail();
+		} catch (DNSAPIException ex) {
+			assertEquals("NOT FOUND", ex.getMessage());
+		}
+	}
+	
+	@Test
+	public void testRemoveReverseDomainNotFound() throws DNSAPIException {
+		Long reverseDomainId = 1L;
+		this.rp.registerFakeRequest(HttpMethod.DELETE, "/domains/" + reverseDomainId + ".json?reverse=true", 404, "{\"error\":\"NOT FOUND\"}");
+		
+		try {
+			this.domainAPI.removeReverseDomain(reverseDomainId);
+			fail();
+		} catch (DNSAPIException ex) {
+			assertEquals("NOT FOUND", ex.getMessage());
+		}
 	}
 }

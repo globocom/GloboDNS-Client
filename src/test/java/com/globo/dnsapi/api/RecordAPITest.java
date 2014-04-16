@@ -1,7 +1,6 @@
 package com.globo.dnsapi.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -109,4 +108,17 @@ public class RecordAPITest {
 		assertEquals(newRecordName, createdRecord.getName());
 		assertEquals(newRecordContent, createdRecord.getContent());
 	}	
+	
+	@Test
+	public void testRemoveRecordNotFound() throws DNSAPIException {
+		Long recordId = 1L;
+		this.rp.registerFakeRequest(HttpMethod.DELETE, "/records/" + recordId + ".json", 404, "{\"error\":\"NOT FOUND\"}");
+		
+		try {
+			this.recordAPI.removeRecord(recordId);
+			fail();
+		} catch (DNSAPIException ex) {
+			assertEquals("NOT FOUND", ex.getMessage());
+		}
+	}
 }
