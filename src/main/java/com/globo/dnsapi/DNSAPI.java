@@ -9,6 +9,7 @@ import com.globo.dnsapi.api.ExportAPI;
 import com.globo.dnsapi.api.RecordAPI;
 import com.globo.dnsapi.model.Authentication;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
 public class DNSAPI {
@@ -26,7 +27,7 @@ public class DNSAPI {
 	}
 
 	public static DNSAPI buildHttpApi(String baseUrl, String userName, String password) {
-		DNSAPI apiFactory = new DNSAPI(new NetHttpTransport());
+		DNSAPI apiFactory = new DNSAPI(new ApacheHttpTransport.Builder().build());
 		apiFactory.setBaseUrl(baseUrl);
 		apiFactory.setUserName(userName);
 		apiFactory.setPassword(password);

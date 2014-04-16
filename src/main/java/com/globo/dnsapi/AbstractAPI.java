@@ -62,6 +62,7 @@ public abstract class AbstractAPI<T> {
 				request.setThrowExceptionOnExecuteError(false);
 				request.setParser(parser);
 				request.setLoggingEnabled(true);
+				request.setCurlLoggingEnabled(true);
 				request.setUnsuccessfulResponseHandler(new HttpUnsuccessfulResponseHandler() {
 					
 					@Override

@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import com.globo.dnsapi.api.RecordAPI;
 import com.globo.dnsapi.model.Authentication;
 import com.globo.dnsapi.model.Domain;
 import com.globo.dnsapi.model.Record;
+import com.google.api.client.http.HttpTransport;
 
 public class Simulation {
 
@@ -29,6 +33,15 @@ public class Simulation {
 		
 		LOGGER.info("Using url " + baseUrl);
 		
+		// Setup java logging
+		java.util.logging.Logger httpLogging = java.util.logging.Logger.getLogger(HttpTransport.class.getName());
+		httpLogging.setLevel(Level.ALL);
+		ConsoleHandler handler = new ConsoleHandler();
+		handler.setFormatter(new SimpleFormatter());
+		handler.setLevel(Level.ALL);
+		httpLogging.addHandler(handler);
+		
+		// Start
 		DNSAPI rp = DNSAPI.buildHttpApi(baseUrl, email, password);
 		
 		AuthAPI authAPI = rp.getAuthAPI();
