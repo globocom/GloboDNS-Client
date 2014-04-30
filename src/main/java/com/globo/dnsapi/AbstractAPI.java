@@ -62,6 +62,7 @@ public abstract class AbstractAPI<T> {
 				request.setThrowExceptionOnExecuteError(false);
 				request.setParser(parser);
 				request.setLoggingEnabled(true);
+				request.getHeaders().setUserAgent("DNSAPI-Java-Client");
 				request.setCurlLoggingEnabled(true);
 				request.setUnsuccessfulResponseHandler(new HttpUnsuccessfulResponseHandler() {
 					
@@ -106,9 +107,7 @@ public abstract class AbstractAPI<T> {
 	}
 
 	protected void insertAuthenticationHeaders(HttpRequest request) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-Auth-Token", this.getDnsapi().requestToken());
-		request.setHeaders(headers);
+		request.getHeaders().set("X-Auth-Token", this.getDnsapi().requestToken());
 	}
 
 	/**
