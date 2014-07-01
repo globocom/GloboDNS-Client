@@ -17,6 +17,27 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <name>Daniel Vega Simoes</name>
+      <email>daniel.simoes@corp.globo.com</email>
+      <organization>Globo.com</organization>
+      <organizationUrl>https://github.com/danielvsimoes</organizationUrl>
+    </developer>
+    <developer>
+        <name>Luis Henrique Okama</name>
+        <email>lokama@gmail.com</email>
+        <organization>Globo.com</organization>
+        <organizationUrl>https://github.com/lokama</organizationUrl>
+    </developer>
+    <developer>
+        <name>Silvano Nogueira Buback</name>
+        <email>snbuback@gmail.com</email>
+        <organization>Globo.com</organization>
+        <organizationUrl>https://github.com/snbuback</organizationUrl>
+    </developer>
+   </developers>
+
   <scm>
     <connection>scm:git:git@github.com:globocom/dnsapi-client-java.git</connection>
     <url>scm:git:git@github.com:globocom/dnsapi-client-java.git</url>
