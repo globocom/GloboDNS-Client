@@ -115,6 +115,7 @@
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.5</version>
           <executions>
             <execution>
               <id>sign-artifacts</id>
@@ -137,14 +138,15 @@
 
   <distributionManagement>
     <repository>
-      <id>archiva.internal</id>
-      <name>Maven Internal Repository</name>
-      <url>dav:http://cvs.globoi.com/archiva/repository/internal</url>
+      <id>sonatype-repo</id>
+      <name>Sonatype OSS Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
+    
     <snapshotRepository>
-      <id>archiva.snapshots</id>
-      <name>Maven Internal Snapshots Repository</name>
-      <url>dav:http://cvs.globoi.com/archiva/repository/snapshots</url>
+      <id>sonatype-snapshot</id>
+      <name>Sonatype OSS Snapshot Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
