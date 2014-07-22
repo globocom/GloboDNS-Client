@@ -1,4 +1,4 @@
-package com.globo.dnsapi.model;
+package com.globo.globodns.client.model;
 
 import com.google.api.client.util.Key;
 

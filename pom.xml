@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.globo.dnsapi</groupId>
-  <artifactId>dnsapi-client-java</artifactId>
-  <version>0.0.12-SNAPSHOT</version>
+  <groupId>com.globo.globodns</groupId>
+  <artifactId>globodns-client</artifactId>
+  <version>0.0.13</version>
   <packaging>jar</packaging>
 
-  <name>dnsapi-client-java</name>
-  <description>Java client for DNS API</description>
-  <url>https://github.com/globocom/dnsapi-client-java</url>
+  <name>globodns-client</name>
+  <description>Java client for GloboDNS</description>
+  <url>https://github.com/globocom/GloboDNS-Client</url>
 
   <licenses>
     <license>
@@ -40,9 +40,9 @@
    </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:globocom/dnsapi-client-java.git</connection>
-    <url>scm:git:git@github.com:globocom/dnsapi-client-java.git</url>
-    <developerConnection>scm:git:git@github.com:globocom/dnsapi-client-java.git</developerConnection>
+    <connection>scm:git:git@github.com:globocom/GloboDNS-Client.git</connection>
+    <url>scm:git:git@github.com:globocom/GloboDNS-Client.git</url>
+    <developerConnection>scm:git:git@github.com:globocom/GloboDNS-Client.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

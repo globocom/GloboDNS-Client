@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi;
+package com.globo.globodns.client;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,15 +29,15 @@ import com.google.api.client.testing.http.MockLowLevelHttpRequest;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 
 /**
- * DNSAPIFactory like with mock simulated responses. Useful for tests.
+ * GloboDnsFactory like with mock simulated responses. Useful for tests.
  * @author snbuback
  *
  */
-public class MockDNSAPI extends DNSAPI {
+public class MockGloboDns extends GloboDns {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(MockDNSAPI.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MockGloboDns.class);
 	
-	public MockDNSAPI() {
+	public MockGloboDns() {
 		super(new SimulatedHttpTransport());
 		this.setBaseUrl("http://example.com");
 	}

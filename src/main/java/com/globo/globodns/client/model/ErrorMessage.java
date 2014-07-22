@@ -14,37 +14,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.model;
+package com.globo.globodns.client.model;
 
-import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 
-public class User extends GenericJson {
+public class ErrorMessage {
 
-	@Key
-	private String email;
+	@Key("error")
+	private String msg;
 	
-	@Key
-	private String password;
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public ErrorMessage() {
 	}
 	
-	public User(String email, String password) {
-		this.email = email;
-		this.password = password;
+	public String getMsg() {
+		return msg;
+	}
+	
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 }

@@ -1,20 +1,20 @@
-package com.globo.dnsapi;
+package com.globo.globodns.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.globo.dnsapi.api.AuthAPI;
-import com.globo.dnsapi.api.DomainAPI;
-import com.globo.dnsapi.api.ExportAPI;
-import com.globo.dnsapi.api.RecordAPI;
-import com.globo.dnsapi.model.Authentication;
+import com.globo.globodns.client.api.AuthAPI;
+import com.globo.globodns.client.api.DomainAPI;
+import com.globo.globodns.client.api.ExportAPI;
+import com.globo.globodns.client.api.RecordAPI;
+import com.globo.globodns.client.model.Authentication;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-public class DNSAPI {
+public class GloboDns {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(DNSAPI.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(GloboDns.class);
 
 	private final HttpTransport httpTransport;
 	private String baseUrl;
@@ -22,12 +22,12 @@ public class DNSAPI {
 	private String password;
 	private String token;
 
-	protected DNSAPI(HttpTransport httpTransport) {
+	protected GloboDns(HttpTransport httpTransport) {
 		this.httpTransport = httpTransport;
 	}
 
-	public static DNSAPI buildHttpApi(String baseUrl, String userName, String password) {
-		DNSAPI apiFactory = new DNSAPI(new ApacheHttpTransport.Builder().build());
+	public static GloboDns buildHttpApi(String baseUrl, String userName, String password) {
+		GloboDns apiFactory = new GloboDns(new ApacheHttpTransport.Builder().build());
 		apiFactory.setBaseUrl(baseUrl);
 		apiFactory.setUserName(userName);
 		apiFactory.setPassword(password);

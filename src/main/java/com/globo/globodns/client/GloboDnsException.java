@@ -14,17 +14,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi;
+package com.globo.globodns.client;
 
-public class DNSAPIException extends RuntimeException {
+public class GloboDnsException extends RuntimeException {
 
 	private static final long serialVersionUID = 5686288460895537688L;
 
-	public DNSAPIException(String msg) {
+	public GloboDnsException(String msg) {
 		super(msg);
 	}
 	
-	public DNSAPIException(String msg, Throwable e) {
+	public GloboDnsException(String msg, Throwable e) {
 		super(msg, e);
 	}
 }

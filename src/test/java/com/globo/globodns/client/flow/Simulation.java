@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.flow;
+package com.globo.globodns.client.flow;
 
 
 import static org.junit.Assert.assertEquals;
@@ -28,21 +28,21 @@ import java.util.logging.SimpleFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.globo.dnsapi.DNSAPI;
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.api.AuthAPI;
-import com.globo.dnsapi.api.DomainAPI;
-import com.globo.dnsapi.api.RecordAPI;
-import com.globo.dnsapi.model.Authentication;
-import com.globo.dnsapi.model.Domain;
-import com.globo.dnsapi.model.Record;
+import com.globo.globodns.client.GloboDns;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.api.AuthAPI;
+import com.globo.globodns.client.api.DomainAPI;
+import com.globo.globodns.client.api.RecordAPI;
+import com.globo.globodns.client.model.Authentication;
+import com.globo.globodns.client.model.Domain;
+import com.globo.globodns.client.model.Record;
 import com.google.api.client.http.HttpTransport;
 
 public class Simulation {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Simulation.class);
 
-	public static void main(String[] args) throws DNSAPIException {
+	public static void main(String[] args) throws GloboDnsException {
 		String baseUrl = "http://example.com/";
 		String email = "admin@globoi.com";
 		String password = "password";
@@ -58,7 +58,7 @@ public class Simulation {
 		httpLogging.addHandler(handler);
 		
 		// Start
-		DNSAPI rp = DNSAPI.buildHttpApi(baseUrl, email, password);
+		GloboDns rp = GloboDns.buildHttpApi(baseUrl, email, password);
 		
 		AuthAPI authAPI = rp.getAuthAPI();
 		DomainAPI domainAPI = rp.getDomainAPI();

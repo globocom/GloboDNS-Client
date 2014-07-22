@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi;
+package com.globo.globodns.client;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -25,10 +25,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.globo.dnsapi.model.DNSAPIRoot;
-import com.globo.dnsapi.model.ErrorMessage;
+import com.globo.globodns.client.model.ErrorMessage;
+import com.globo.globodns.client.model.GloboDnsRoot;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -46,20 +45,20 @@ public abstract class AbstractAPI<T> {
 	static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	static final JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 
-	private final DNSAPI dnsapi;
+	private final GloboDns globoDns;
 
 	private HttpRequestFactory requestFactory;
 	
-	protected AbstractAPI(DNSAPI dnsapi) {
-		if (dnsapi == null) {
-			throw new IllegalArgumentException("No DNSAPI configured");
+	protected AbstractAPI(GloboDns globoDns) {
+		if (globoDns == null) {
+			throw new IllegalArgumentException("No GloboDNS configured");
 		}
-		this.dnsapi = dnsapi;
+		this.globoDns = globoDns;
 		this.requestFactory = this.buildHttpRequestFactory();
 	}
 	
-	protected DNSAPI getDnsapi() {
-		return this.dnsapi;
+	protected GloboDns getGloboDns() {
+		return this.globoDns;
 	}
 	
 	protected abstract Type getType();
@@ -71,14 +70,14 @@ public abstract class AbstractAPI<T> {
 	 * @return new instance of HttpRequestFactory
 	 */
 	protected HttpRequestFactory buildHttpRequestFactory() {
-		HttpRequestFactory request = this.getDnsapi().getHttpTransport().createRequestFactory(new HttpRequestInitializer() {
+		HttpRequestFactory request = this.getGloboDns().getHttpTransport().createRequestFactory(new HttpRequestInitializer() {
 			@Override
 			public void initialize(HttpRequest request) throws IOException {
 				request.setNumberOfRetries(1);
 				request.setThrowExceptionOnExecuteError(false);
 				request.setParser(parser);
 				request.setLoggingEnabled(true);
-				request.getHeaders().setUserAgent("DNSAPI-Java-Client");
+				request.getHeaders().setUserAgent("GloboDNS-Client");
 				request.setCurlLoggingEnabled(true);
 				request.setUnsuccessfulResponseHandler(new HttpUnsuccessfulResponseHandler() {
 					
@@ -86,7 +85,7 @@ public abstract class AbstractAPI<T> {
 					public boolean handleResponse(HttpRequest request, HttpResponse response,
 							boolean supportsRetry) throws IOException {
 						if (response.getStatusCode() == 401) {
-							getDnsapi().clearToken();
+							getGloboDns().clearToken();
 							
 							if (supportsRetry) {
 								// only if supports retry I will prepare request with a new token, and ask to retry
@@ -123,16 +122,16 @@ public abstract class AbstractAPI<T> {
 	}
 
 	protected void insertAuthenticationHeaders(HttpRequest request) {
-		request.getHeaders().set("X-Auth-Token", this.getDnsapi().requestToken());
+		request.getHeaders().set("X-Auth-Token", this.getGloboDns().requestToken());
 	}
 
 	/**
 	 * Run after each request complete (with or without success).
 	 * @param response
-	 * @throws DNSAPIException
+	 * @throws GloboDnsException
 	 * @throws IOException
 	 */
-	protected void interceptResponse(HttpResponse response) throws DNSAPIException, IOException {
+	protected void interceptResponse(HttpResponse response) throws GloboDnsException, IOException {
 		handleExceptionIfNeeded(response);
 	}
 	
@@ -141,9 +140,9 @@ public abstract class AbstractAPI<T> {
 	 * @param statusCode
 	 * @param responseAsString
 	 * @throws IOException
-	 * @throws NetworkAPIException
+	 * @throws GloboDnsException
 	 */
-	protected void handleExceptionIfNeeded(HttpResponse response) throws DNSAPIException, IOException {
+	protected void handleExceptionIfNeeded(HttpResponse response) throws GloboDnsException, IOException {
 		int statusCode = response.getStatusCode();
 		if (statusCode/100 == 2) {
 			// 200 family code
@@ -155,37 +154,37 @@ public abstract class AbstractAPI<T> {
 			String responseAsString = response.parseAsString();
 			if (responseAsString == null || !responseAsString.startsWith("{")) {
 				// Response not well formed!
-				throw new DNSAPIException("Unknown error in DNS API: " + responseAsString);
+				throw new GloboDnsException("Unknown error in GloboDNS: " + responseAsString);
 			}
 			
-			DNSAPIRoot<ErrorMessage> responseObj = this.parse(responseAsString, ErrorMessage.class);
+			GloboDnsRoot<ErrorMessage> responseObj = this.parse(responseAsString, ErrorMessage.class);
 			ErrorMessage errorMsg = responseObj.getFirstObject();
 			if (errorMsg != null && errorMsg.getMsg() != null) {
-				throw new DNSAPIException(errorMsg.getMsg());
+				throw new GloboDnsException(errorMsg.getMsg());
 			} else {
-				throw new DNSAPIException(responseAsString);
+				throw new GloboDnsException(responseAsString);
 			}
 		} else {
 			// Unknown error code, return generic exception with description
-			throw new DNSAPIException(response.parseAsString());
+			throw new GloboDnsException(response.parseAsString());
 		}
 	}
 	
 	/**
-	 * Convert an HttpResponse object to DNSAPIRoot of <b>E</b> object.
+	 * Convert an HttpResponse object to GloboDnsRoot of <b>E</b> object.
 	 * @param response
 	 * @param type
 	 * @return
-	 * @throws DNSAPIException
+	 * @throws GloboDnsException
 	 */
 	@SuppressWarnings("unchecked")
-	protected <E> DNSAPIRoot<E> parse(String responseAsString, Type type) throws DNSAPIException {
+	protected <E> GloboDnsRoot<E> parse(String responseAsString, Type type) throws GloboDnsException {
 		try {			
-			DNSAPIRoot<E> dnsAPIRoot = new DNSAPIRoot<E>();
+			GloboDnsRoot<E> globoDnsRoot = new GloboDnsRoot<E>();
 			
 			if ("".equalsIgnoreCase(responseAsString)) {
 				// Empty response, just return empty object
-				return dnsAPIRoot;
+				return globoDnsRoot;
 			}
 			
 			boolean isList = false;
@@ -198,32 +197,32 @@ public abstract class AbstractAPI<T> {
 		
 			if (isList) {
 				List<E> retList = (List<E>) parser.parseAndClose(in, type);
-				dnsAPIRoot.setObjectList(retList);
+				globoDnsRoot.setObjectList(retList);
 			} else {
 				E retObj = (E) parser.parseAndClose(in, type);
-				dnsAPIRoot.getObjectList().add(retObj);
+				globoDnsRoot.getObjectList().add(retObj);
 			}
 			
-			return dnsAPIRoot;
+			return globoDnsRoot;
 
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e.getMessage(), e);
+			throw new GloboDnsException("IOError: " + e.getMessage(), e);
 		}
 	}
 	
-	protected <E> DNSAPIRoot<E> parse(HttpResponse response, Type type) throws DNSAPIException {
+	protected <E> GloboDnsRoot<E> parse(HttpResponse response, Type type) throws GloboDnsException {
 		try {
 			return this.parse(response.parseAsString(), type);
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e.getMessage(), e);
+			throw new GloboDnsException("IOError: " + e.getMessage(), e);
 		}
 	}
 	
 	protected GenericUrl buildUrl(String suffixUrl) {
-		return new GenericUrl(this.dnsapi.getBaseUrl() + suffixUrl);
+		return new GenericUrl(this.globoDns.getBaseUrl() + suffixUrl);
 	}
 	
-	protected DNSAPIRoot<T> get(String suffixUrl, boolean returnsList) throws DNSAPIException {
+	protected GloboDnsRoot<T> get(String suffixUrl, boolean returnsList) throws GloboDnsException {
 		try {
 			Type type = returnsList ? getListType() : getType();
 			GenericUrl url = this.buildUrl(suffixUrl);
@@ -231,11 +230,11 @@ public abstract class AbstractAPI<T> {
 			HttpResponse response = request.execute();
 			return this.parse(response, type); 
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e, e);
+			throw new GloboDnsException("IOError: " + e, e);
 		}
 	}
 	
-	protected DNSAPIRoot<T> post(String suffixUrl, Object payload, boolean returnsList) throws DNSAPIException {
+	protected GloboDnsRoot<T> post(String suffixUrl, Object payload, boolean returnsList) throws GloboDnsException {
 		try {
 			Type type = returnsList ? getListType() : getType();
 			GenericUrl url = this.buildUrl(suffixUrl);
@@ -248,11 +247,11 @@ public abstract class AbstractAPI<T> {
 
 			return this.parse(response, type);
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e, e);
+			throw new GloboDnsException("IOError: " + e, e);
 		}	
 	}
 
-	protected DNSAPIRoot<T> put(String suffixUrl, Object payload, boolean returnsList) throws DNSAPIException {
+	protected GloboDnsRoot<T> put(String suffixUrl, Object payload, boolean returnsList) throws GloboDnsException {
 		try {
 			Type type = returnsList ? getListType() : getType();
 			GenericUrl url = this.buildUrl(suffixUrl);
@@ -265,11 +264,11 @@ public abstract class AbstractAPI<T> {
 
 			return this.parse(response, type);
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e, e);
+			throw new GloboDnsException("IOError: " + e, e);
 		}	
 	}
 
-	protected DNSAPIRoot<T> delete(String suffixUrl, boolean returnsList) throws DNSAPIException {
+	protected GloboDnsRoot<T> delete(String suffixUrl, boolean returnsList) throws GloboDnsException {
 		try {
 			Type type = returnsList ? getListType() : getType();
 			GenericUrl url = this.buildUrl(suffixUrl);
@@ -277,7 +276,7 @@ public abstract class AbstractAPI<T> {
 			HttpResponse response = request.execute();
 			return this.parse(response, type); 
 		} catch (IOException e) {
-			throw new DNSAPIException("IOError: " + e, e);
+			throw new GloboDnsException("IOError: " + e, e);
 		}
 	}
 	

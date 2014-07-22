@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import static org.junit.Assert.*;
 
@@ -25,33 +25,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.MockDNSAPI;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.model.Domain;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.api.DomainAPI;
+import com.globo.globodns.client.model.Domain;
 
 @RunWith(JUnit4.class)
 public class DomainAPITest {
 
 	private DomainAPI domainAPI;
-	private MockDNSAPI rp;
+	private MockGloboDns rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = new MockDNSAPI();
+		this.rp = new MockGloboDns();
 		this.domainAPI = this.rp.getDomainAPI();
 	}
 	
-	@Test(expected=DNSAPIException.class)
-	public void testMissingToken() throws DNSAPIException {
+	@Test(expected=GloboDnsException.class)
+	public void testMissingToken() throws GloboDnsException {
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401,
 				"{\"error\":\"You need to sign in or sign up before continuing.\"}");
 		
 		this.domainAPI.listAll();
 	}
 	
-	@Test(expected=DNSAPIException.class)
-	public void testInvalidToken() throws DNSAPIException {
+	@Test(expected=GloboDnsException.class)
+	public void testInvalidToken() throws GloboDnsException {
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 401,
 				"{\"error\":\"Invalid authentication token.\"}");
 
@@ -59,7 +60,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testGetById() throws DNSAPIException {
+	public void testGetById() throws GloboDnsException {
 		Long domainId = 10L;
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains/" + domainId + ".json", 
 				"{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-11T17:31:58Z\",\"id\":10,\"last_check\":null,\"master\":null,\"name\":\"anydomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-11T17:38:40Z\",\"user_id\":null,\"view_id\":null}}");
@@ -70,7 +71,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testListByName() throws DNSAPIException {
+	public void testListByName() throws GloboDnsException {
 		
 		String domainName = "anydomain.com";
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
@@ -86,7 +87,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testListReverseByName() throws DNSAPIException {
+	public void testListReverseByName() throws GloboDnsException {
 		
 		String reverseDomain = "10.10.10.in-addr.arpa";
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + reverseDomain + "&reverse=true", 
@@ -102,7 +103,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testListByNameDomainDoesntExist() throws DNSAPIException {
+	public void testListByNameDomainDoesntExist() throws GloboDnsException {
 		
 		String domainName = "unexistant.dev.globoi.com";
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
@@ -114,7 +115,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testListAll() throws DNSAPIException {
+	public void testListAll() throws GloboDnsException {
 		
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 
 				"[{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-25T01:04:05Z\",\"id\":1,\"last_check\":null,\"master\":null,\"name\":\"firstdomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-25T10:05:02Z\",\"user_id\":null,\"view_id\":null}},"
@@ -147,7 +148,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testListAllReverse() throws DNSAPIException {
+	public void testListAllReverse() throws GloboDnsException {
 		
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?reverse=true", 
 				"[{\"domain\":{\"account\":null,\"addressing_type\":\"R\",\"authority_type\":\"M\",\"created_at\":\"2013-08-13T18:46:25Z\",\"id\":1,\"last_check\":null,\"master\":null,\"name\":\"0.11.10.in-addr.arpa\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"3H\",\"updated_at\":\"2013-08-13T18:46:25Z\",\"user_id\":null,\"view_id\":null}},"
@@ -175,7 +176,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testCreateDomain() throws DNSAPIException {
+	public void testCreateDomain() throws GloboDnsException {
 		String newDomainName = "newdomain.com";
 		String newAuthType = "M";
 		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 
@@ -187,8 +188,8 @@ public class DomainAPITest {
 		assertEquals(newAuthType, createdDomain.getAuthorityType());
 	}
 	
-	@Test(expected=DNSAPIException.class)
-	public void testCreateDomainAlreadyExists() throws DNSAPIException {
+	@Test(expected=GloboDnsException.class)
+	public void testCreateDomainAlreadyExists() throws GloboDnsException {
 		String newDomainName = "newdomain.com";
 		String newAuthType = "M";
 		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 422,
@@ -198,7 +199,7 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testCreateReverseDomain() throws DNSAPIException {
+	public void testCreateReverseDomain() throws GloboDnsException {
 		String newReverseDomainName = "0.10.10.in-addr.arpa";
 		String newReverseAuthType = "M";
 		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json?reverse=true", 
@@ -211,27 +212,27 @@ public class DomainAPITest {
 	}
 	
 	@Test
-	public void testRemoveDomainNotFound() throws DNSAPIException {
+	public void testRemoveDomainNotFound() throws GloboDnsException {
 		Long domainId = 1L;
 		this.rp.registerFakeRequest(HttpMethod.DELETE, "/domains/" + domainId + ".json", 404, "{\"error\":\"NOT FOUND\"}");
 		
 		try {
 			this.domainAPI.removeDomain(domainId);
 			fail();
-		} catch (DNSAPIException ex) {
+		} catch (GloboDnsException ex) {
 			assertEquals("NOT FOUND", ex.getMessage());
 		}
 	}
 	
 	@Test
-	public void testRemoveReverseDomainNotFound() throws DNSAPIException {
+	public void testRemoveReverseDomainNotFound() throws GloboDnsException {
 		Long reverseDomainId = 1L;
 		this.rp.registerFakeRequest(HttpMethod.DELETE, "/domains/" + reverseDomainId + ".json?reverse=true", 404, "{\"error\":\"NOT FOUND\"}");
 		
 		try {
 			this.domainAPI.removeReverseDomain(reverseDomainId);
 			fail();
-		} catch (DNSAPIException ex) {
+		} catch (GloboDnsException ex) {
 			assertEquals("NOT FOUND", ex.getMessage());
 		}
 	}

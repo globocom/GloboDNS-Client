@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import static org.junit.Assert.*;
 
@@ -23,25 +23,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.MockDNSAPI;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.model.Export;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.api.ExportAPI;
+import com.globo.globodns.client.model.Export;
 
 @RunWith(JUnit4.class)
 public class ExportAPITest {
 
 	private ExportAPI exportAPI;
-	private MockDNSAPI rp;
+	private MockGloboDns rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = new MockDNSAPI();
+		this.rp = new MockGloboDns();
 		this.exportAPI = this.rp.getExportAPI();
 	}
 	
 	@Test
-	public void testScheduleExport() throws DNSAPIException {
+	public void testScheduleExport() throws GloboDnsException {
 		this.rp.registerFakeRequest(HttpMethod.POST, "/bind9/schedule_export.json", 
 				"{\"output\":\"BIND export scheduled for 2012-07-14 02:35:00 -0300\"}");
 		

@@ -1,9 +1,9 @@
-dnsapi-client-java
+GloboDNS-Client
 ==================
 
-Java client for DNS API.
+Java client for GloboDNS.
 
-https://github.com/globocom/dns-api
+https://github.com/globocom/GloboDNS
 
 
 ## To release a new version

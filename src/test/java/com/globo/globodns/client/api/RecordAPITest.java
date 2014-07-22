@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import static org.junit.Assert.*;
 
@@ -25,26 +25,27 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.MockDNSAPI;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.model.Record;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.api.RecordAPI;
+import com.globo.globodns.client.model.Record;
 
 @RunWith(JUnit4.class)
 public class RecordAPITest {
 
 	private RecordAPI recordAPI;
-	private MockDNSAPI rp;
+	private MockGloboDns rp;
 	private Long domainId = 2000L; 
 	
 	@Before
 	public void setUp() {
-		this.rp = new MockDNSAPI();
+		this.rp = new MockGloboDns();
 		this.recordAPI = this.rp.getRecordAPI();
 	}
 		
 	@Test
-	public void testGetById() throws DNSAPIException {
+	public void testGetById() throws GloboDnsException {
 		Long recordId = 10L;
 		this.rp.registerFakeRequest(HttpMethod.GET, "/records/" + recordId + ".json", 
 				"{\"ns\":{\"content\":\"ns1.globoi.com.\",\"created_at\":\"2013-08-09T22:41:19Z\",\"domain_id\":2000,\"id\":10,\"name\":\"@\",\"prio\":null,\"ttl\":\"\",\"updated_at\":\"2013-08-09T22:41:19Z\"}}");
@@ -55,7 +56,7 @@ public class RecordAPITest {
 	}
 	
 	@Test
-	public void testListByQuery() throws DNSAPIException {
+	public void testListByQuery() throws GloboDnsException {
 		
 		String recordContent = "ns1.domain.com.";
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains/" + domainId + "/records.json?query=" + recordContent, 
@@ -71,7 +72,7 @@ public class RecordAPITest {
 	}
 	
 	@Test
-	public void testListByQueryRecordDoesntExist() throws DNSAPIException {
+	public void testListByQueryRecordDoesntExist() throws GloboDnsException {
 		
 		String recordContent = "unexistant.domain.com";
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains/" + domainId + "/records.json?query=" + recordContent, 
@@ -83,7 +84,7 @@ public class RecordAPITest {
 	}
 	
 	@Test
-	public void testListAll() throws DNSAPIException {
+	public void testListAll() throws GloboDnsException {
 		
 		this.rp.registerFakeRequest(HttpMethod.GET, "/domains/" + domainId + "/records.json", 
 				"[{\"ns\":{\"content\":\"ns1.domain.com.\",\"created_at\":\"2013-08-13T18:46:15Z\",\"domain_id\":2000,\"id\":10,\"name\":\"@\",\"prio\":null,\"ttl\":null,\"updated_at\":\"2013-08-13T18:46:15Z\"}},"
@@ -112,7 +113,7 @@ public class RecordAPITest {
 	}
 
 	@Test
-	public void testCreateRecord() throws DNSAPIException {
+	public void testCreateRecord() throws GloboDnsException {
 		String newRecordName = "@";
 		String newRecordContent = "ns1.domain.com.";
 		String newRecordType = "NS";
@@ -126,20 +127,20 @@ public class RecordAPITest {
 	}	
 	
 	@Test
-	public void testRemoveRecordNotFound() throws DNSAPIException {
+	public void testRemoveRecordNotFound() throws GloboDnsException {
 		Long recordId = 1L;
 		this.rp.registerFakeRequest(HttpMethod.DELETE, "/records/" + recordId + ".json", 404, "{\"error\":\"NOT FOUND\"}");
 		
 		try {
 			this.recordAPI.removeRecord(recordId);
 			fail();
-		} catch (DNSAPIException ex) {
+		} catch (GloboDnsException ex) {
 			assertEquals("NOT FOUND", ex.getMessage());
 		}
 	}
 
 	@Test
-	public void testGetTxtRecordById() throws DNSAPIException {
+	public void testGetTxtRecordById() throws GloboDnsException {
 		Long recordId = 188564L;
 		this.rp.registerFakeRequest(HttpMethod.GET, "/records/" + recordId + ".json", 
 				"{\"txt\":{\"content\":\"n7sbs83-fd83d7-d-d734-dds-3e3d-33\",\"created_at\":\"2014-04-16T22:27:46Z\",\"domain_id\":5101,\"id\":188564,\"name\":\"cloudstack-network\",\"prio\":null,\"ttl\":\"\",\"updated_at\":\"2014-04-16T22:27:46Z\"}}");

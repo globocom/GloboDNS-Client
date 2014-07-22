@@ -14,23 +14,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.AbstractAPI;
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.DNSAPI;
-import com.globo.dnsapi.model.Authentication;
-import com.globo.dnsapi.model.DNSAPIRoot;
-import com.globo.dnsapi.model.User;
+import com.globo.globodns.client.AbstractAPI;
+import com.globo.globodns.client.GloboDns;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.model.Authentication;
+import com.globo.globodns.client.model.GloboDnsRoot;
+import com.globo.globodns.client.model.User;
 import com.google.api.client.http.HttpRequest;
 
 public class AuthAPI extends AbstractAPI<Authentication> {
 
-	public AuthAPI(DNSAPI transport) {
+	public AuthAPI(GloboDns transport) {
 		super(transport);
 	}
 	
@@ -49,16 +49,16 @@ public class AuthAPI extends AbstractAPI<Authentication> {
 		request.setUnsuccessfulResponseHandler(null);
 	}
 	
-	public Authentication signIn(String email, String password) throws DNSAPIException {
+	public Authentication signIn(String email, String password) throws GloboDnsException {
 		User user = new User(email, password);
-		DNSAPIRoot<User> payload = new DNSAPIRoot<User>();
+		GloboDnsRoot<User> payload = new GloboDnsRoot<User>();
 		payload.set("user", user);
-		DNSAPIRoot<Authentication> dnsAPIRoot = this.post("/users/sign_in.json", payload, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid authentication response");
+		GloboDnsRoot<Authentication> globoDnsRoot = this.post("/users/sign_in.json", payload, false);
+		if (globoDnsRoot == null) {
+			throw new GloboDnsException("Invalid authentication response");
 		}
 
-		Authentication auth = dnsAPIRoot.getFirstObject();
+		Authentication auth = globoDnsRoot.getFirstObject();
 		return auth;
 	}
 }

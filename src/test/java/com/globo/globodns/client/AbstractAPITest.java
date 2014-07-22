@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi;
+package com.globo.globodns.client;
 
 
 import static org.mockito.Mockito.*;
@@ -30,18 +30,21 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.model.DNSAPIRoot;
+import com.globo.globodns.client.AbstractAPI;
+import com.globo.globodns.client.GloboDns;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.model.GloboDnsRoot;
 
 @RunWith(JUnit4.class)
 public class AbstractAPITest {
 
 	private TestAPI testApi;
-	private MockDNSAPI rp;
+	private MockGloboDns rp;
 	
 	@Before
 	public void setUp() {
-		this.rp = spy(new MockDNSAPI());
+		this.rp = spy(new MockGloboDns());
 		this.testApi = new TestAPI(this.rp);
 	}
 
@@ -67,7 +70,7 @@ public class AbstractAPITest {
 	
 	public static class TestAPI extends AbstractAPI<String> {
 
-		protected TestAPI(DNSAPI apiFactory) {
+		protected TestAPI(GloboDns apiFactory) {
 			super(apiFactory);
 		}
 
@@ -82,7 +85,7 @@ public class AbstractAPITest {
 		}
 		
 		public String testRequest() {
-			DNSAPIRoot<String> root = this.post("/request/test", null, false);
+			GloboDnsRoot<String> root = this.post("/request/test", null, false);
 			return root.getFirstObject();
 		}
 	}

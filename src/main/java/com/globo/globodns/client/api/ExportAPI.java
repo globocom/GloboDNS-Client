@@ -14,21 +14,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.globo.dnsapi.AbstractAPI;
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.DNSAPI;
-import com.globo.dnsapi.model.DNSAPIRoot;
-import com.globo.dnsapi.model.Export;
+import com.globo.globodns.client.AbstractAPI;
+import com.globo.globodns.client.GloboDns;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.model.GloboDnsRoot;
+import com.globo.globodns.client.model.Export;
 
 public class ExportAPI extends AbstractAPI<Export> {
 
-	public ExportAPI(DNSAPI transport) {
+	public ExportAPI(GloboDns transport) {
 		super(transport);
 	}
 	
@@ -42,11 +42,11 @@ public class ExportAPI extends AbstractAPI<Export> {
 		return new TypeReference<List<Export>>() {}.getType();
 	}
 	
-	public Export scheduleExport() throws DNSAPIException {
-		DNSAPIRoot<Export> dnsAPIRoot = this.post("/bind9/schedule_export.json", null, false);
-		if (dnsAPIRoot == null) {
-			throw new DNSAPIException("Invalid response");
+	public Export scheduleExport() throws GloboDnsException {
+		GloboDnsRoot<Export> globoDnsRoot = this.post("/bind9/schedule_export.json", null, false);
+		if (globoDnsRoot == null) {
+			throw new GloboDnsException("Invalid response");
 		}
-		return dnsAPIRoot.getFirstObject();
+		return globoDnsRoot.getFirstObject();
 	}
 }

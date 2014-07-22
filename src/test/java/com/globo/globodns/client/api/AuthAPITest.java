@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.api;
+package com.globo.globodns.client.api;
 
 import static org.junit.Assert.*;
 
@@ -23,27 +23,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.MockDNSAPI;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.model.Authentication;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.api.AuthAPI;
+import com.globo.globodns.client.model.Authentication;
 
 @RunWith(JUnit4.class)
 public class AuthAPITest {
 
 	private AuthAPI authAPI;
-	private MockDNSAPI dnsapi;
+	private MockGloboDns globoDns;
 	
 	@Before
 	public void setUp() {
-		this.dnsapi = new MockDNSAPI();
-		this.authAPI = this.dnsapi.getAuthAPI();
+		this.globoDns = new MockGloboDns();
+		this.authAPI = this.globoDns.getAuthAPI();
 	}
 	
 	@Test
-	public void testSignIn() throws DNSAPIException {
+	public void testSignIn() throws GloboDnsException {
 		
-		this.dnsapi.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
+		this.globoDns.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
 				"{\"authentication_token\":\"Xjn5GEsYsQySAsr7APqj\",\"id\":1}");
 		Authentication auth = this.authAPI.signIn("admin@domain.com", "password");
 		assertNotNull(auth);
@@ -52,15 +53,15 @@ public class AuthAPITest {
 	}
 	
 	@Test
-	public void testSignInWithInvalidPasswordDoesntRetry() throws DNSAPIException {
+	public void testSignInWithInvalidPasswordDoesntRetry() throws GloboDnsException {
 		
 		try {
-			this.dnsapi.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 401,
+			this.globoDns.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 401,
 					"{\"error\":\"You need to sign in or sign up before continuing.\"}");
 			this.authAPI.signIn("error@error.com", "invalid");
 			fail();
-		} catch (DNSAPIException e) {
-			assertEquals(1, this.dnsapi.totalNumberOfRequests());
+		} catch (GloboDnsException e) {
+			assertEquals(1, this.globoDns.totalNumberOfRequests());
 		}
 	}
 	

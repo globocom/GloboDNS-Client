@@ -14,38 +14,32 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.globo.globodns.client.model;
 
 import com.google.api.client.json.GenericJson;
+import com.google.api.client.util.Key;
 
+public class Authentication extends GenericJson {
 
-public class DNSAPIRoot<T> extends GenericJson {
+	@Key
+	private Long id;
+	
+	@Key("authentication_token")
+	private String token;
 
-	private List<T> objectList;
-	
-	public List<T> getObjectList() {
-		return this.objectList;
+	public Long getId() {
+		return id;
 	}
-	
-	public void setObjectList(List<T> objectList) {
-		this.objectList = objectList;
+
+	public void setId(Long id) {
+		this.id = id;
 	}
-	
-	public DNSAPIRoot() {
-		this.objectList = new ArrayList<T>();
+
+	public String getToken() {
+		return token;
 	}
-	
-	/**
-	 * Return first object in list or <code>null</code> if list is empty
-	 * @return
-	 */
-	public T getFirstObject() {
-		if (this.getObjectList() == null || this.getObjectList().isEmpty()) {
-			return null;
-		}
-		return this.getObjectList().get(0);
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

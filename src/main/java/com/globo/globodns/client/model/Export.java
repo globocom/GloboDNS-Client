@@ -14,32 +14,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.model;
+package com.globo.globodns.client.model;
 
-import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 
-public class Authentication extends GenericJson {
+public class Export {
 
-	@Key
-	private Long id;
+	@Key("output")
+	private String result;
 	
-	@Key("authentication_token")
-	private String token;
-
-	public Long getId() {
-		return id;
+	public String getResult() {
+		return this.result;
 	}
-
-	public void setId(Long id) {
-		this.id = id;
+	
+	public void setResult(String result) {
+		this.result = result;
 	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
+	
+	public Export() {
 	}
 }

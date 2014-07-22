@@ -14,23 +14,38 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.model;
+package com.globo.globodns.client.model;
 
-import com.google.api.client.util.Key;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ErrorMessage {
+import com.google.api.client.json.GenericJson;
 
-	@Key("error")
-	private String msg;
+
+public class GloboDnsRoot<T> extends GenericJson {
+
+	private List<T> objectList;
 	
-	public ErrorMessage() {
+	public List<T> getObjectList() {
+		return this.objectList;
 	}
 	
-	public String getMsg() {
-		return msg;
+	public void setObjectList(List<T> objectList) {
+		this.objectList = objectList;
 	}
 	
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public GloboDnsRoot() {
+		this.objectList = new ArrayList<T>();
+	}
+	
+	/**
+	 * Return first object in list or <code>null</code> if list is empty
+	 * @return
+	 */
+	public T getFirstObject() {
+		if (this.getObjectList() == null || this.getObjectList().isEmpty()) {
+			return null;
+		}
+		return this.getObjectList().get(0);
 	}
 }

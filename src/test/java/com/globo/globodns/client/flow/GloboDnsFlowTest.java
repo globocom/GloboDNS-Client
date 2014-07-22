@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package com.globo.dnsapi.flow;
+package com.globo.globodns.client.flow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,30 +26,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.globo.dnsapi.DNSAPIException;
-import com.globo.dnsapi.MockDNSAPI;
-import com.globo.dnsapi.MockDNSAPI.HttpMethod;
-import com.globo.dnsapi.api.AuthAPI;
-import com.globo.dnsapi.api.DomainAPI;
-import com.globo.dnsapi.model.Authentication;
-import com.globo.dnsapi.model.Domain;
+import com.globo.globodns.client.GloboDnsException;
+import com.globo.globodns.client.MockGloboDns;
+import com.globo.globodns.client.MockGloboDns.HttpMethod;
+import com.globo.globodns.client.api.AuthAPI;
+import com.globo.globodns.client.api.DomainAPI;
+import com.globo.globodns.client.model.Authentication;
+import com.globo.globodns.client.model.Domain;
 
 @RunWith(JUnit4.class)
-public class DNSAPIFlowTest {
+public class GloboDnsFlowTest {
 	
 	private AuthAPI authAPI;
 	private DomainAPI domainAPI;
-	private MockDNSAPI rp;
+	private MockGloboDns globoDns;
 	
 	@Before
 	public void setUp() {
-		this.rp = new MockDNSAPI();
-		this.authAPI = this.rp.getAuthAPI();
-		this.domainAPI = this.rp.getDomainAPI();
+		this.globoDns = new MockGloboDns();
+		this.authAPI = this.globoDns.getAuthAPI();
+		this.domainAPI = this.globoDns.getDomainAPI();
 	}
 
 	@Test
-	public void testDNSAPIFlow() throws DNSAPIException {
+	public void testGloboDnsFlow() throws GloboDnsException {
 		
 		// Variables
 		String domainName = "anydomain.com";
@@ -59,19 +59,19 @@ public class DNSAPIFlowTest {
 		String newAuthType = "M";
 		
 		// Step 0: Register all fake requests that will be made throughout the test
-		this.rp.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
+		this.globoDns.registerFakeRequest(HttpMethod.POST, "/users/sign_in.json", 
 				"{\"authentication_token\":\"Xjn5GEsYsQySAsr7APqj\",\"id\":1}");
 		
-		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json", 
+		this.globoDns.registerFakeRequest(HttpMethod.GET, "/domains.json", 
 				"[{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-25T01:04:05Z\",\"id\":1,\"last_check\":null,\"master\":null,\"name\":\"firstdomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-25T10:05:02Z\",\"user_id\":null,\"view_id\":null}},"
 				+ "{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2013-08-22T19:48:54Z\",\"id\":2,\"last_check\":null,\"master\":null,\"name\":\"seconddomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2013-08-22T19:48:54Z\",\"user_id\":null,\"view_id\":null}},"
 				+ "{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2013-08-13T18:38:37Z\",\"id\":3,\"last_check\":null,\"master\":null,\"name\":\"thirddomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"86400\",\"updated_at\":\"2013-08-13T18:38:37Z\",\"user_id\":null,\"view_id\":null}},"
 				+ "{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-11T17:31:58Z\",\"id\":4,\"last_check\":null,\"master\":null,\"name\":\"fourthdomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-11T17:38:40Z\",\"user_id\":null,\"view_id\":null}}]");
 		
-		this.rp.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
+		this.globoDns.registerFakeRequest(HttpMethod.GET, "/domains.json?query=" + domainName, 
 				"[{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-11T17:31:58Z\",\"id\":0,\"last_check\":null,\"master\":null,\"name\":\"anydomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-11T17:38:40Z\",\"user_id\":null,\"view_id\":null}}]");
 
-		this.rp.registerFakeRequest(HttpMethod.POST, "/domains.json", 
+		this.globoDns.registerFakeRequest(HttpMethod.POST, "/domains.json", 
 				"{\"domain\":{\"account\":null,\"addressing_type\":\"N\",\"authority_type\":\"M\",\"created_at\":\"2014-03-25T01:04:05Z\",\"id\":100,\"last_check\":null,\"master\":null,\"name\":\"newdomain.com\",\"notes\":null,\"notified_serial\":null,\"ttl\":\"10800\",\"updated_at\":\"2014-03-25T01:04:05Z\",\"user_id\":null,\"view_id\":null}}");
 
 		
