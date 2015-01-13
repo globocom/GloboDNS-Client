@@ -65,11 +65,15 @@ public class Simulation {
 
         String domainName = "cp.dev.globoi.com";
         String newDomainName = "newdomain.dev.globoi.com";
+        String newReverseDomainName = "2.1.10.in-addr.arpa";
+        String newReverseIpv6DomainName = "9.2.3.8.e.1.e.f.f.f.3.b.2.0.2.0.ip6.arpa";
         String newAuthType = "M";
         String updateTTL = "11000";
         String newRecordName = "@";
         String newRecordContent = "ns1.newdomain.dev.globoi.com.";
         String newRecordType = "NS";
+        String recordNameIpv6 = "record-ipv6";
+        String recordContentIpv6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329";
 
         // Step 1: Sign in
         LOGGER.info("Signing in with email=" + email + " and password=" + password);
@@ -99,12 +103,24 @@ public class Simulation {
         Domain domain = domainList.get(0);
         LOGGER.info("Found domain with name=" + domainName + ": id=" + domain.getId());
 
-        // Step 4: Create a new domain
+        // Step 4: Create a new domain and a new reverse domain (IPv4 and IPv6)
         LOGGER.info("Creating domain with name=" + newDomainName + " and authority type=" + newAuthType);
         domain = domainAPI.createDomain(newDomainName, 1L, newAuthType);
 
         assertNotNull(domain);
         LOGGER.info("Domain created successfully with id=" + domain.getId());
+
+        LOGGER.info("Creating reverse domain with name=" + newReverseDomainName + " and authority type=" + newAuthType);
+        Domain reverseDomain = domainAPI.createReverseDomain(newReverseDomainName, 1L, newAuthType);
+
+        assertNotNull(reverseDomain);
+        LOGGER.info("Reverse domain created successfully with id=" + reverseDomain.getId());
+
+        LOGGER.info("Creating reverse IPv6 domain with name=" + newReverseIpv6DomainName + " and authority type=" + newAuthType);
+        Domain reverseIpv6Domain = domainAPI.createReverseDomain(newReverseIpv6DomainName, 1L, newAuthType);
+
+        assertNotNull(reverseIpv6Domain);
+        LOGGER.info("Reverse IPv6 domain created successfully with id=" + reverseIpv6Domain.getId());
 
         // Step 5: Get the domain we just created
         LOGGER.info("Retrieving created domain with name=" + domain.getName() + "  and id=" + domain.getId());
@@ -145,17 +161,15 @@ public class Simulation {
         assertNotNull(recordtxt);
         LOGGER.info("Record created successfully with id=" + recordtxt.getId());
 
-        // Step 10: Create IPv6 record
-        String recordNameIpv6 = "record-ipv6";
-        String recordContentIpv6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329";
+        // Step 10: Create IPv6 record on the created domain
         LOGGER.info("Creating IPv6 record with name=" + recordNameIpv6 + " and content=" + recordContentIpv6);
         Record recordIpv6 = recordAPI.createRecord(domain.getId(), recordNameIpv6, recordContentIpv6, "AAAA");
 
         assertNotNull(recordIpv6);
         LOGGER.info("Record created successfully with id=" + recordIpv6.getId());
 
-        // Step 11: Remove all records on the created domain
-        LOGGER.info("Removing all records on the created domain");
+        // Step 11: Remove all records from the created domain
+        LOGGER.info("Removing all records from the created domain");
         recordList = recordAPI.listAll(domain.getId());
         assertNotNull(recordList);
         assertEquals(5, recordList.size()); // 2 by default + 3 created (A, TXT and AAAA)
@@ -165,9 +179,57 @@ public class Simulation {
         }
         LOGGER.info("Removed " + recordList.size() + " records");
 
-        // Step 12: Remove the created domain
+        // Step 12: Create reverse record
+        String reverseRecordName = "134";
+        String reverseRecordContent = newRecordName + ".";
+        LOGGER.info("Creating reverse record with name=" + reverseRecordName + " and content=" + reverseRecordContent);
+        Record reverseRecord = recordAPI.createRecord(reverseDomain.getId(), reverseRecordName, reverseRecordContent, "PTR");
+
+        assertNotNull(reverseRecord);
+        LOGGER.info("Reverse record created successfully with id=" + reverseRecord.getId());
+
+        // Step 13: Create reverse IPv6 record
+        String reverseRecordNameIpv6 = "0.0.0.0.0.0.0.0.0.0.0.0.0.8.e.f";
+        String reverseRecordContentIpv6 = recordNameIpv6 + ".";
+        LOGGER.info("Creating reverse IPv6 record with name=" + reverseRecordNameIpv6 + " and content=" + reverseRecordContentIpv6);
+        Record reverseRecordIpv6 = recordAPI.createRecord(reverseIpv6Domain.getId(), reverseRecordNameIpv6, reverseRecordContentIpv6, "PTR");
+
+        assertNotNull(reverseRecordIpv6);
+        LOGGER.info("Reverse IPv6 record created successfully with id=" + reverseRecordIpv6.getId());
+
+        // Step 14: Remove all reverse records from the created reverse domain
+        LOGGER.info("Removing all reverse records from the created reverse domain");
+        recordList = recordAPI.listAll(reverseDomain.getId());
+        assertNotNull(recordList);
+        assertEquals(3, recordList.size()); // 2 by default + 1 created (IPv4)
+        for (Record record : recordList) {
+            LOGGER.info(">> Removing record " + record.getName());
+            recordAPI.removeRecord(record.getId());
+        }
+        LOGGER.info("Removed " + recordList.size() + " records");
+
+        // Step 15: Remove all reverse IPv6 records from the created reverse IPv6 domain
+        LOGGER.info("Removing all reverse records from the created reverse domain");
+        recordList = recordAPI.listAll(reverseIpv6Domain.getId());
+        assertNotNull(recordList);
+        assertEquals(3, recordList.size()); // 2 by default + 1 created (IPv6)
+        for (Record record : recordList) {
+            LOGGER.info(">> Removing record " + record.getName());
+            recordAPI.removeRecord(record.getId());
+        }
+        LOGGER.info("Removed " + recordList.size() + " records");
+
+        // Step 16: Remove the created domain and the reverse domain
         LOGGER.info("Removing domain with name=" + domain.getName() + " and id=" + domain.getId());
         domainAPI.removeDomain(domain.getId());
         LOGGER.info("Domain removed successfully");
+
+        LOGGER.info("Removing reverse domain with name=" + reverseDomain.getName() + " and id=" + reverseDomain.getId());
+        domainAPI.removeReverseDomain(reverseDomain.getId());
+        LOGGER.info("Reverse domain removed successfully");
+
+        LOGGER.info("Removing reverse IPv6 domain with name=" + reverseIpv6Domain.getName() + " and id=" + reverseIpv6Domain.getId());
+        domainAPI.removeReverseDomain(reverseIpv6Domain.getId());
+        LOGGER.info("Reverse IPv6 domain removed successfully");
     }
 }
