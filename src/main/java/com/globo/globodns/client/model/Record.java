@@ -148,9 +148,9 @@ public class Record {
         if (this.genericRecordAttributes.getName() != null) {
             return this.genericRecordAttributes.getName();
         } else if (this.typeARecordAttributes.getName() != null) {
-            return this.typeAAAARecordAttributes.getName();
-        } else if (this.typeAAAARecordAttributes.getName() != null) {
             return this.typeARecordAttributes.getName();
+        } else if (this.typeAAAARecordAttributes.getName() != null) {
+            return this.typeAAAARecordAttributes.getName();
         } else if (this.typeNSRecordAttributes.getName() != null) {
             return this.typeNSRecordAttributes.getName();
         } else if (this.typeSOARecordAttributes.getName() != null) {
