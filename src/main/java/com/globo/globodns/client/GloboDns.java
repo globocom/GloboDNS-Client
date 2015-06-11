@@ -1,5 +1,20 @@
 package com.globo.globodns.client;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +25,7 @@ import com.globo.globodns.client.api.RecordAPI;
 import com.globo.globodns.client.model.Authentication;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import java.net.ProxySelector;
 
 public class GloboDns {
 
@@ -27,7 +42,7 @@ public class GloboDns {
 	}
 
 	public static GloboDns buildHttpApi(String baseUrl, String userName, String password) {
-		GloboDns apiFactory = new GloboDns(new ApacheHttpTransport.Builder().build());
+		GloboDns apiFactory = new GloboDns(getTransport());
 		apiFactory.setBaseUrl(baseUrl);
 		apiFactory.setUserName(userName);
 		apiFactory.setPassword(password);
@@ -106,4 +121,27 @@ public class GloboDns {
 		this.clearToken();
 	}
 
+	//Not using default HttpClient created by ApacheHttpTransport.Builder().build() as it turns off stale connection check
+	private static ApacheHttpTransport getTransport(){
+		return new ApacheHttpTransport(newDefaultHttpClient(SSLSocketFactory.getSocketFactory(), getHttpParams(), ProxySelector.getDefault()));
+	}
+
+	private static HttpParams getHttpParams() {
+		HttpParams params = new BasicHttpParams();
+		HttpConnectionParams.setSocketBufferSize(params, 8192);
+		ConnManagerParams.setMaxTotalConnections(params, 200);
+		ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(20));
+		return params;
+	}
+
+	private static HttpClient newDefaultHttpClient(SSLSocketFactory socketFactory, HttpParams params, ProxySelector proxySelector) {
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+		registry.register(new Scheme("https", socketFactory, 443));
+		ClientConnectionManager connectionManager = new ThreadSafeClientConnManager(params, registry);
+		DefaultHttpClient httpClient = new DefaultHttpClient(connectionManager, params);
+		httpClient.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+		httpClient.setRoutePlanner(new ProxySelectorRoutePlanner(registry, proxySelector));
+		return httpClient;
+	}
 }
