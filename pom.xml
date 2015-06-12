@@ -37,6 +37,12 @@
         <organization>Globo.com</organization>
         <organizationUrl>https://github.com/snbuback</organizationUrl>
     </developer>
+    <developer>
+        <name>Victor Mendes Eduardo</name>
+        <email>victor.mendes.eduardo@gmail.com</email>
+        <organization>Globo.com</organization>
+        <organizationUrl>https://github.com/victor-mendes-eduardo</organizationUrl>
+    </developer>
    </developers>
 
   <scm>
