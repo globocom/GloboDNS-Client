@@ -9,6 +9,8 @@ import com.globo.globodns.client.GloboDns;
 import com.globo.globodns.client.GloboDnsException;
 import com.globo.globodns.client.model.GloboDnsRoot;
 import com.globo.globodns.client.model.Domain;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 public class DomainAPI extends AbstractAPI<Domain> {
 	
@@ -29,27 +31,39 @@ public class DomainAPI extends AbstractAPI<Domain> {
 	//////////////////
 	// Domain calls //
 	//////////////////
+	@Trace(dispatcher = true)
 	public Domain createDomain(String name, Long templateId, String authorityType) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/createDomain");
 		return this.createDomain(name, templateId, authorityType, false);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public List<Domain> listAll() throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listDomains");
 		return this.listAll(false);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public List<Domain> listByQuery(String query) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listDomainsByQuery");
 		return this.listByQuery(query, false);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public Domain getById(Long domainId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/getDomainById");
 		return this.getById(domainId, false);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public void updateDomain(Long domainId, String name, String authorityType, String ttl) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/updateDomain");
 		this.updateDomain(domainId, name, authorityType, ttl, false);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public void removeDomain(Long domainId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/removeDomain");
 		this.removeDomain(domainId, false);
 	}
 	
@@ -57,27 +71,39 @@ public class DomainAPI extends AbstractAPI<Domain> {
 	//////////////////////////
 	// Reverse domain calls //
 	//////////////////////////
+	@Trace(dispatcher = true)
 	public Domain createReverseDomain(String name, Long templateId, String authorityType) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/createReverseDomain");
 		return this.createDomain(name, templateId, authorityType, true);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public List<Domain> listAllReverse() throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listAllReverseDomains");
 		return this.listAll(true);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public List<Domain> listReverseByQuery(String query) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listReverseDomainsByQuery");
 		return this.listByQuery(query, true);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public Domain getReverseById(Long domainId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/getReverseDomainById");
 		return this.getById(domainId, true);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public void updateReverseDomain(Long domainId, String name, String authorityType, String ttl) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/updateReverseDomain");
 		this.updateDomain(domainId, name, authorityType, ttl, true);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public void removeReverseDomain(Long domainId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/removeReverseDomain");
 		this.removeDomain(domainId, true);
 	}
 	

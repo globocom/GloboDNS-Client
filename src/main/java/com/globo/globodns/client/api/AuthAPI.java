@@ -27,6 +27,8 @@ import com.globo.globodns.client.model.Authentication;
 import com.globo.globodns.client.model.GloboDnsRoot;
 import com.globo.globodns.client.model.User;
 import com.google.api.client.http.HttpRequest;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 public class AuthAPI extends AbstractAPI<Authentication> {
 
@@ -48,8 +50,10 @@ public class AuthAPI extends AbstractAPI<Authentication> {
 	protected void interceptRequest(HttpRequest request) {
 		request.setUnsuccessfulResponseHandler(null);
 	}
-	
+
+	@Trace(dispatcher = true)
 	public Authentication signIn(String email, String password) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/signin");
 		User user = new User(email, password);
 		GloboDnsRoot<User> payload = new GloboDnsRoot<User>();
 		payload.set("user", user);

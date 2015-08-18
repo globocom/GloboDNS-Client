@@ -25,6 +25,8 @@ import com.globo.globodns.client.GloboDns;
 import com.globo.globodns.client.GloboDnsException;
 import com.globo.globodns.client.model.GloboDnsRoot;
 import com.globo.globodns.client.model.Record;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 public class RecordAPI extends AbstractAPI<Record> {
 
@@ -49,7 +51,9 @@ public class RecordAPI extends AbstractAPI<Record> {
 	/* 
 	 * Creating features 
 	 */
+	@Trace(dispatcher = true)
 	public Record createRecord(Long domainId, String name, String content, String type) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/createRecord");
 		if (domainId == null) {
 			throw new GloboDnsException("Domain id cannot be null");
 		}
@@ -70,7 +74,9 @@ public class RecordAPI extends AbstractAPI<Record> {
 	/* 
 	 * Recovering features
 	 */
+	@Trace(dispatcher = true)
 	public List<Record> listAll(Long domainId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listRecords");
 		if (domainId == null) {
 			throw new GloboDnsException("Domain id cannot be null");
 		}
@@ -81,8 +87,10 @@ public class RecordAPI extends AbstractAPI<Record> {
 		}
 		return globoDnsRoot.getObjectList();
 	}
-	
+
+	@Trace(dispatcher = true)
 	public List<Record> listByQuery(Long domainId, String query) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/listRecordsByQuery");
 		if (domainId == null) {
 			throw new GloboDnsException("Domain id cannot be null");
 		}
@@ -97,8 +105,10 @@ public class RecordAPI extends AbstractAPI<Record> {
 		}
 		return globoDnsRoot.getObjectList();
 	}
-	
+
+	@Trace(dispatcher = true)
 	public Record getById(Long recordId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/getRecordById");
 		if (recordId == null) {
 			throw new GloboDnsException("Record id cannot be null");
 		}
@@ -113,7 +123,9 @@ public class RecordAPI extends AbstractAPI<Record> {
 	/* 
 	 * Updating features
 	 */
+	@Trace(dispatcher = true)
 	public void updateRecord(Long recordId, Long domainId, String name, String content) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/updateRecord");
 		if (recordId == null) {
 			throw new GloboDnsException("Record id cannot be null");
 		}
@@ -136,7 +148,9 @@ public class RecordAPI extends AbstractAPI<Record> {
 	/* 
 	 * Removing features
 	 */
+	@Trace(dispatcher = true)
 	public void removeRecord(Long recordId) throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/removeRecord");
 		if (recordId == null) {
 			throw new GloboDnsException("Record id cannot be null");
 		}

@@ -25,6 +25,8 @@ import com.globo.globodns.client.GloboDns;
 import com.globo.globodns.client.GloboDnsException;
 import com.globo.globodns.client.model.GloboDnsRoot;
 import com.globo.globodns.client.model.Export;
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 public class ExportAPI extends AbstractAPI<Export> {
 
@@ -41,8 +43,10 @@ public class ExportAPI extends AbstractAPI<Export> {
 	protected Type getListType() {
 		return new TypeReference<List<Export>>() {}.getType();
 	}
-	
+
+	@Trace(dispatcher = true)
 	public Export scheduleExport() throws GloboDnsException {
+		NewRelic.setTransactionName(null, "/globodns/scheduleExport");
 		GloboDnsRoot<Export> globoDnsRoot = this.post("/bind9/schedule_export.json", null, false);
 		if (globoDnsRoot == null) {
 			throw new GloboDnsException("Invalid response");
