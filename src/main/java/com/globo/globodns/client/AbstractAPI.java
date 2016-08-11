@@ -16,10 +16,18 @@
 */
 package com.globo.globodns.client;
 
+import com.globo.globodns.client.exception.GloboDnsHttpException;
+import com.globo.globodns.client.exception.GloboDnsIOException;
+import com.globo.globodns.client.exception.GloboDnsParseException;
+import com.globo.globodns.client.http.HttpUtil;
+import com.globo.globodns.client.http.ResponseWrapper;
+import com.google.api.client.http.HttpContent;
+import com.google.api.client.http.HttpMethods;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -99,11 +107,6 @@ public abstract class AbstractAPI<T> {
 				request.setResponseInterceptor(new HttpResponseInterceptor() {
 					@Override
 					public void interceptResponse(HttpResponse response) throws IOException {
-						LOGGER.debug("Response from {} {} is {} {}", 
-								response.getRequest().getRequestMethod(),
-								response.getRequest().getUrl(),
-								response.getStatusCode(),
-								response.getStatusMessage());
 						AbstractAPI.this.interceptResponse(response);
 					}
 				});
@@ -137,9 +140,6 @@ public abstract class AbstractAPI<T> {
 	
 	/**
 	 * Exception treatment for generic calls
-	 * @param statusCode
-	 * @param responseAsString
-	 * @throws IOException
 	 * @throws GloboDnsException
 	 */
 	protected void handleExceptionIfNeeded(HttpResponse response) throws GloboDnsException, IOException {
@@ -154,27 +154,24 @@ public abstract class AbstractAPI<T> {
 			String responseAsString = response.parseAsString();
 			if (responseAsString == null || !responseAsString.startsWith("{")) {
 				// Response not well formed!
-				throw new GloboDnsException("Unknown error in GloboDNS: " + responseAsString);
+				throw new GloboDnsHttpException("Unknown error in GloboDNS: " + responseAsString, statusCode);
 			}
 			
 			GloboDnsRoot<ErrorMessage> responseObj = this.parse(responseAsString, ErrorMessage.class);
 			ErrorMessage errorMsg = responseObj.getFirstObject();
 			if (errorMsg != null && errorMsg.getMsg() != null) {
-				throw new GloboDnsException(errorMsg.getMsg());
+				throw new GloboDnsHttpException(errorMsg.getMsg(), statusCode);
 			} else {
-				throw new GloboDnsException(responseAsString);
+				throw new GloboDnsHttpException(responseAsString, statusCode);
 			}
 		} else {
 			// Unknown error code, return generic exception with description
-			throw new GloboDnsException(response.parseAsString());
+			throw new GloboDnsHttpException(response.parseAsString(), statusCode);
 		}
 	}
 	
 	/**
 	 * Convert an HttpResponse object to GloboDnsRoot of <b>E</b> object.
-	 * @param response
-	 * @param type
-	 * @return
 	 * @throws GloboDnsException
 	 */
 	@SuppressWarnings("unchecked")
@@ -206,7 +203,7 @@ public abstract class AbstractAPI<T> {
 			return globoDnsRoot;
 
 		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e.getMessage(), e);
+			throw new GloboDnsParseException("IOError Parse: " + e.getMessage(), e);
 		}
 	}
 	
@@ -214,7 +211,7 @@ public abstract class AbstractAPI<T> {
 		try {
 			return this.parse(response.parseAsString(), type);
 		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e.getMessage(), e);
+			throw new GloboDnsParseException("IOError: " + e.getMessage(), e);
 		}
 	}
 	
@@ -223,62 +220,62 @@ public abstract class AbstractAPI<T> {
 	}
 	
 	protected GloboDnsRoot<T> get(String suffixUrl, boolean returnsList) throws GloboDnsException {
-		try {
-			Type type = returnsList ? getListType() : getType();
-			GenericUrl url = this.buildUrl(suffixUrl);
-			HttpRequest request = this.requestFactory.buildGetRequest(url);
-			HttpResponse response = request.execute();
-			return this.parse(response, type); 
-		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e, e);
-		}
+		ResponseWrapper response = this.performRequest(buildUrl(suffixUrl), HttpMethods.GET, null);
+
+		Type type = returnsList ? getListType() : getType();
+		return parse(response.getContent(), type);
 	}
 	
 	protected GloboDnsRoot<T> post(String suffixUrl, Object payload, boolean returnsList) throws GloboDnsException {
-		try {
-			Type type = returnsList ? getListType() : getType();
-			GenericUrl url = this.buildUrl(suffixUrl);
-			JsonHttpContent content = null;
-			if (payload != null) {
-				content = new JsonHttpContent(JSON_FACTORY, payload);
-			}
-			HttpRequest request = this.requestFactory.buildPostRequest(url, content);
-			HttpResponse response = request.execute();
+		ResponseWrapper response = this.performRequest(buildUrl(suffixUrl), HttpMethods.POST, payload);
 
-			return this.parse(response, type);
-		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e, e);
-		}	
+		Type type = returnsList ? getListType() : getType();
+		return parse(response.getContent(), type);
 	}
 
 	protected GloboDnsRoot<T> put(String suffixUrl, Object payload, boolean returnsList) throws GloboDnsException {
-		try {
-			Type type = returnsList ? getListType() : getType();
-			GenericUrl url = this.buildUrl(suffixUrl);
-			JsonHttpContent content = null;
-			if (payload != null) {
-				content = new JsonHttpContent(JSON_FACTORY, payload);
-			}
-			HttpRequest request = this.requestFactory.buildPutRequest(url, content);
-			HttpResponse response = request.execute();
+		ResponseWrapper response = this.performRequest(buildUrl(suffixUrl), HttpMethods.PUT, payload);
 
-			return this.parse(response, type);
-		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e, e);
-		}	
+		Type type = returnsList ? getListType() : getType();
+		return parse(response.getContent(), type);
 	}
 
 	protected GloboDnsRoot<T> delete(String suffixUrl, boolean returnsList) throws GloboDnsException {
+		ResponseWrapper response = this.performRequest(buildUrl(suffixUrl), HttpMethods.DELETE, null);
+
+		Type type = returnsList ? getListType() : getType();
+		return parse(response.getContent(), type);
+	}
+
+	protected ResponseWrapper performRequest(GenericUrl url, String method, Object payload) throws GloboDnsException {
+		Long startTime = new Date().getTime();
+
 		try {
-			Type type = returnsList ? getListType() : getType();
-			GenericUrl url = this.buildUrl(suffixUrl);
-			HttpRequest request = this.requestFactory.buildDeleteRequest(url);
+			HttpRequest request = this.buildRequest(method, url, payload);
+			HttpUtil.loggingRequest(request);
+
 			HttpResponse response = request.execute();
-			return this.parse(response, type); 
+
+			ResponseWrapper helper = new ResponseWrapper(response);
+			HttpUtil.loggingResponse(startTime, request, helper);
+
+			return helper;
 		} catch (IOException e) {
-			throw new GloboDnsException("IOError: " + e, e);
+			throw new GloboDnsIOException("IOException: " + e.getMessage(), e );
 		}
 	}
-	
-	
+	protected HttpRequest buildRequest(String method, GenericUrl url, Object payload) throws IOException {
+		HttpRequest request;
+
+		// Preparing content for POST and PUT
+		HttpContent content = null;
+		if (payload != null) {
+			content = new JsonHttpContent(new JacksonFactory(), payload);
+		}
+
+		request = this.requestFactory.buildRequest(method, url, content);
+		request.setLoggingEnabled(true);
+
+		return request;
+	}
 }
