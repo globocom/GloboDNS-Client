@@ -261,6 +261,7 @@ public abstract class AbstractAPI<T> {
 
 			return helper;
 		} catch (IOException e) {
+			LOGGER.error("IOException trying request: " +  url.toString() + " method: " + method + " error: " + e.toString(), e);
 			throw new GloboDnsIOException("IOException: " + e.getMessage(), e );
 		}
 	}
