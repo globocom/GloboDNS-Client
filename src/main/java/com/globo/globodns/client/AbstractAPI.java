@@ -81,7 +81,9 @@ public abstract class AbstractAPI<T> {
 		HttpRequestFactory request = this.getGloboDns().getHttpTransport().createRequestFactory(new HttpRequestInitializer() {
 			@Override
 			public void initialize(HttpRequest request) throws IOException {
-				request.setNumberOfRetries(1);
+				request.setNumberOfRetries(AbstractAPI.this.globoDns.getNumberOfRetries());
+				request.setConnectTimeout(AbstractAPI.this.globoDns.getConnectionTimeout());
+				request.setReadTimeout(AbstractAPI.this.globoDns.getReadTimeout());
 				request.setThrowExceptionOnExecuteError(false);
 				request.setParser(parser);
 				request.setLoggingEnabled(true);

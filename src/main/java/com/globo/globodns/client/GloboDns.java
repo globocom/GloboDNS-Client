@@ -36,6 +36,9 @@ public class GloboDns {
 	private String userName;
 	private String password;
 	private String token;
+	private Integer numberOfRetries = 1;
+	private Integer connectTimeout = 20000;
+	private Integer readTimeout = 20000;;
 
 	protected GloboDns(HttpTransport httpTransport) {
 		this.httpTransport = httpTransport;
@@ -143,5 +146,29 @@ public class GloboDns {
 		httpClient.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
 		httpClient.setRoutePlanner(new ProxySelectorRoutePlanner(registry, proxySelector));
 		return httpClient;
+	}
+
+	public int getNumberOfRetries() {
+		return numberOfRetries;
+	}
+
+	public int getConnectionTimeout() {
+		return connectTimeout;
+	}
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setNumberOfRetries(Integer numberOfRetries) {
+		this.numberOfRetries = numberOfRetries;
+	}
+
+	public void setConnectTimeout(Integer connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public void setReadTimeout(Integer readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 }
