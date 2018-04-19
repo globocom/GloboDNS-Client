@@ -37,14 +37,16 @@ public class GloboDns {
 	private String password;
 	private String token;
 	private Integer numberOfRetries = 1;
-	private Integer connectTimeout = 20000;
-	private Integer readTimeout = 20000;;
+	private Integer connectTimeout = 120000;
+	private Integer readTimeout = 120000;
 
 	protected GloboDns(HttpTransport httpTransport) {
 		this.httpTransport = httpTransport;
 	}
 
-	public static GloboDns buildHttpApi(String baseUrl, String userName, String password) {
+	public static GloboDns buildHttpApi(String baseUrl, String userName, String password
+										) {
+
 		GloboDns apiFactory = new GloboDns(getTransport());
 		apiFactory.setBaseUrl(baseUrl);
 		apiFactory.setUserName(userName);

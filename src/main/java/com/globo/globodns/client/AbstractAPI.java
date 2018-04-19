@@ -118,7 +118,7 @@ public abstract class AbstractAPI<T> {
 		return request;
 	}
 	
-	/**
+	/*
 	 * Run before each request runs.
 	 * @param request
 	 */
@@ -130,7 +130,7 @@ public abstract class AbstractAPI<T> {
 		request.getHeaders().set("X-Auth-Token", this.getGloboDns().requestToken());
 	}
 
-	/**
+	/*
 	 * Run after each request complete (with or without success).
 	 * @param response
 	 * @throws GloboDnsException
@@ -140,7 +140,7 @@ public abstract class AbstractAPI<T> {
 		handleExceptionIfNeeded(response);
 	}
 	
-	/**
+	/*
 	 * Exception treatment for generic calls
 	 * @throws GloboDnsException
 	 */
@@ -172,7 +172,7 @@ public abstract class AbstractAPI<T> {
 		}
 	}
 	
-	/**
+	/*
 	 * Convert an HttpResponse object to GloboDnsRoot of <b>E</b> object.
 	 * @throws GloboDnsException
 	 */

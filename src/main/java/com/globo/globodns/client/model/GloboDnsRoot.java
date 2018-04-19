@@ -38,7 +38,7 @@ public class GloboDnsRoot<T> extends GenericJson {
 		this.objectList = new ArrayList<T>();
 	}
 	
-	/**
+	/*
 	 * Return first object in list or <code>null</code> if list is empty
 	 * @return
 	 */
